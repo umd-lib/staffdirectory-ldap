@@ -37,12 +37,7 @@ public class MembershipProcessorTest {
 
     for (MembershipTestCase test : testCases) {
       MembershipInfo info = new MembershipInfo(test.getMemberships());
-      assertEquals("Division failed for " + test.membersOf, test.division, info.getDivision());
-      assertEquals("Department failed for " + test.membersOf, test.department, info.getDepartment());
-      assertEquals("Unit failed for " + test.membersOf, test.unit, info.getUnit());
-      assertEquals("Cost Center failed for " + test.membersOf, test.costCenter, info.getCostCenter());
-      assertEquals("Faculty Permanent Status failed for " + test.membersOf, test.facultyPermanentStatus,
-          info.isFacultyPermanentStatus());
+      verify(test, info);
     }
   }
 
@@ -57,14 +52,32 @@ public class MembershipProcessorTest {
         "Software Systems Development and Research", null, "044100", true);
 
     MembershipInfo info = new MembershipInfo(test.getMemberships());
+    verify(test, info);
+  }
 
-    assertEquals("Division failed for " + test.membersOf, test.division, info.getDivision());
-    assertEquals("Department failed for " + test.membersOf, test.department, info.getDepartment());
-    assertEquals("Unit failed for " + test.membersOf, test.unit, info.getUnit());
-    assertEquals("Cost Center failed for " + test.membersOf, test.costCenter, info.getCostCenter());
-    assertEquals("Faculty Permanent Status failed for " + test.membersOf, test.facultyPermanentStatus,
-        info.isFacultyPermanentStatus());
+  @Test
+  public void testFte() {
+    List<String> memberWithFte = new ArrayList<>();
+    memberWithFte.add("Departmental_Groups:Libraries:Staff_Directory:FTE_50");
+    memberWithFte
+        .add("Departmental_Groups:Libraries:Staff_Directory:04_DSS:044100_Software_Systems_Development_and_Research");
 
+    MembershipTestCase test = create(memberWithFte, "DSS",
+        "Software Systems Development and Research", null, "044100", false, "50.00");
+
+    MembershipInfo info = new MembershipInfo(test.getMemberships());
+    verify(test, info);
+  }
+
+  private void verify(MembershipTestCase expected, MembershipInfo actual) {
+    assertEquals("Division failed for " + expected.membersOf, expected.division, actual.getDivision());
+    assertEquals("Department failed for " + expected.membersOf, expected.department, actual.getDepartment());
+    assertEquals("Unit failed for " + expected.membersOf, expected.unit, actual.getUnit());
+    assertEquals("Cost Center failed for " + expected.membersOf, expected.costCenter, actual.getCostCenter());
+    assertEquals("Faculty Permanent Status failed for " + expected.membersOf, expected.facultyPermanentStatus,
+        actual.isFacultyPermanentStatus());
+    assertEquals("FTE failed for " + expected.membersOf, expected.fte,
+        actual.getFte());
   }
 }
 
@@ -75,6 +88,7 @@ class MembershipTestCase {
   public final String unit;
   public final String costCenter;
   public final boolean facultyPermanentStatus;
+  public final String fte;
 
   public static MembershipTestCase create(String memberOf, String division, String department, String unit,
       String costCenter, boolean facultyPermanentStatus) {
@@ -83,7 +97,12 @@ class MembershipTestCase {
 
   public static MembershipTestCase create(List<String> membersOf, String division, String department, String unit,
       String costCenter, boolean facultyPermanentStatus) {
-    return new MembershipTestCase(membersOf, division, department, unit, costCenter, facultyPermanentStatus);
+    return new MembershipTestCase(membersOf, division, department, unit, costCenter, facultyPermanentStatus, "100.00");
+  }
+
+  public static MembershipTestCase create(List<String> membersOf, String division, String department, String unit,
+      String costCenter, boolean facultyPermanentStatus, String fte) {
+    return new MembershipTestCase(membersOf, division, department, unit, costCenter, facultyPermanentStatus, fte);
   }
 
   public MembershipTestCase(List<String> membersOf, String division, String department, String unit, String costCenter,
@@ -94,6 +113,18 @@ class MembershipTestCase {
     this.unit = unit;
     this.costCenter = costCenter;
     this.facultyPermanentStatus = facultyPermanentStatus;
+    this.fte = "100.00";
+  }
+
+  public MembershipTestCase(List<String> membersOf, String division, String department, String unit, String costCenter,
+      boolean facultyPermanentStatus, String fte) {
+    this.membersOf = membersOf;
+    this.division = division;
+    this.department = department;
+    this.unit = unit;
+    this.costCenter = costCenter;
+    this.facultyPermanentStatus = facultyPermanentStatus;
+    this.fte = fte;
   }
 
   public MembershipTestCase(String memberOf, String division, String department, String unit, String costCenter,

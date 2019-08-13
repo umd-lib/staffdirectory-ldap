@@ -73,7 +73,7 @@ public class ExcelGenerator {
       for (Person p : persons) {
         row = sheet.createRow(rowIndex);
 
-        String fte = (p.getFte() == null) ? "100.00%" : p.getFte();
+        String fte = (p.getFte() == null) ? "100.00%" : (p.getFte() + "%");
         String categoryStatuses = null;
         List<String> categoryStatusesList = p.getCategoryStatuses();
         if (categoryStatusesList != null) {

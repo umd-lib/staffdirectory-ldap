@@ -145,7 +145,7 @@ public class Ldap {
           .department(membershipInfo.getDepartment())
           .unit(membershipInfo.getUnit())
           .location("TODO")
-          .fte("TODO")
+          .fte(membershipInfo.getFte())
           .categoryStatuses(Arrays.asList("TODO"))
           .facultyPermanentStatus(false) // TODO
           .descriptiveTitle(getAttrValue(attrs.get("umOptionalTitle")))

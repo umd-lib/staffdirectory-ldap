@@ -10,6 +10,7 @@ public class MembershipInfo {
 
   private static final String STAFF_DIR_PREFIX = "Departmental_Groups:Libraries:Staff_Directory:";
   private static final String FACULTY_PERMANENT_STATUS = "Departmental_Groups:Libraries:Staff_Directory:Permanent_Status";
+  private static final String FTE_PREFIX = "Departmental_Groups:Libraries:Staff_Directory:FTE_";
 
   private List<String> memberships;
 
@@ -18,6 +19,7 @@ public class MembershipInfo {
   private String unit;
   private String costCenter;
   private boolean facultyPermanentStatus;
+  private String fte = null;
 
   public MembershipInfo(List<String> memberships) {
     this.memberships = memberships;
@@ -36,6 +38,12 @@ public class MembershipInfo {
       }
       if (membership.equals(FACULTY_PERMANENT_STATUS)) {
         this.facultyPermanentStatus = true;
+        continue;
+      }
+      if (membership.startsWith(FTE_PREFIX)) {
+        String chopped = membership.replaceFirst(FTE_PREFIX, "");
+        String fte = chopped + ".00";
+        this.fte = fte;
         continue;
       }
       if (membership.startsWith(STAFF_DIR_PREFIX)) {
@@ -96,5 +104,9 @@ public class MembershipInfo {
 
   public boolean isFacultyPermanentStatus() {
     return facultyPermanentStatus;
+  }
+
+  public String getFte() {
+    return fte;
   }
 }
