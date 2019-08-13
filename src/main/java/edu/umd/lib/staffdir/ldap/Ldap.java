@@ -1,13 +1,9 @@
 package edu.umd.lib.staffdir.ldap;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.Name;
@@ -36,36 +32,6 @@ public class Ldap {
       "umOfficialTitle", "umDisplayTitle", "umPrimaryCampusRoom", "umPrimaryCampusBuilding",
       "umCatStatus", "umOptionalTitle", "memberOf"
   };
-
-  public static void main(String[] args) {
-    Properties props = null;
-    try {
-      FileInputStream propFile = new FileInputStream("ldap.properties");
-      props = new Properties(System.getProperties());
-      props.load(propFile);
-    } catch (IOException ioe) {
-      System.out.println(ioe);
-      System.exit(1);
-    }
-
-    String ldapUrl = props.getProperty("ldap.url");
-    String authentication = props.getProperty("ldap.authentication");
-    String bindDn = props.getProperty("ldap.bindDn");
-    String credentials = props.getProperty("ldap.credentials");
-    String searchBaseDn = props.getProperty("ldap.searchBaseDn");
-
-    List<SearchResult> searchResults = ldapSearch(ldapUrl, authentication, bindDn, credentials, searchBaseDn);
-    List<Person> persons = getPersons(searchResults);
-
-    // Sort the persons by last name
-    Collections.sort(persons, (Person p1, Person p2) -> p1.getLastName().compareTo(p2.getLastName()));
-    for (Person p : persons) {
-      System.out.println(p);
-    }
-
-    System.out.println("persons = " + persons.size());
-
-  }
 
   public static List<SearchResult> ldapSearch(String ldapUrl, String authentication, String bindDn, String credentials,
       String searchBaseDn) {

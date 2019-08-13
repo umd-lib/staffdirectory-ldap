@@ -1,14 +1,9 @@
 package edu.umd.lib.staffdir.excel;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
-
-import javax.naming.directory.SearchResult;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -27,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.umd.lib.staffdir.Person;
-import edu.umd.lib.staffdir.ldap.Ldap;
 
 public class ExcelGenerator {
   public static final Logger log = LoggerFactory.getLogger(ExcelGenerator.class);
@@ -138,43 +132,5 @@ public class ExcelGenerator {
     } catch (IOException ioe) {
       log.error("I/O error closing workbook", ioe);
     }
-  }
-
-  public static void main(String[] args) {
-    // List<Person> persons = new ArrayList<>();
-    // PersonBuilder pb = new PersonBuilder();
-    // pb.lastName("Smith").firstName("John").phoneNumber("+1
-    // 301-555-1234").email("jsmith@umd.edu")
-    // .officialTitle("General Factotum").roomNumber("B0101").building("McKeldin
-    // Library")
-    // .division("DSS").department("Software Systems Development and
-    // Research").unit(null)
-    // .location("SSDR").fte(null).categoryStatuses(null).facultyPermanentStatus(false)
-    // .descriptiveTitle("Handyman").costCenter("044100");
-    // persons.add(pb.getPerson());
-
-    Properties props = null;
-    try {
-      FileInputStream propFile = new FileInputStream("ldap.properties");
-      props = new Properties(System.getProperties());
-      props.load(propFile);
-    } catch (IOException ioe) {
-      System.out.println(ioe);
-      System.exit(1);
-    }
-
-    String ldapUrl = props.getProperty("ldap.url");
-    String authentication = props.getProperty("ldap.authentication");
-    String bindDn = props.getProperty("ldap.bindDn");
-    String credentials = props.getProperty("ldap.credentials");
-    String searchBaseDn = props.getProperty("ldap.searchBaseDn");
-
-    List<SearchResult> searchResults = Ldap.ldapSearch(ldapUrl, authentication, bindDn, credentials, searchBaseDn);
-    List<Person> persons = Ldap.getPersons(searchResults);
-
-    // Sort the persons by last name
-    Collections.sort(persons, (Person p1, Person p2) -> p1.getLastName().compareTo(p2.getLastName()));
-
-    ExcelGenerator.generate("/Users/dsteelma/Desktop/test.xlsx", persons, "abcd");
   }
 }
