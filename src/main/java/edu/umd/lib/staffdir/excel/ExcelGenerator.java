@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -26,7 +27,7 @@ import edu.umd.lib.staffdir.Person;
 public class ExcelGenerator {
   public static final Logger log = LoggerFactory.getLogger(ExcelGenerator.class);
 
-  public static void generate(String filename, List<Person> persons, String password) {
+  public static void generate(String filename, List<Person> persons, String password, Map<String, String> locations) {
     try (Workbook wb = new XSSFWorkbook()) {
 
       Sheet sheet = wb.createSheet("All Staff List");
@@ -76,6 +77,7 @@ public class ExcelGenerator {
 
         String facultyPermStatus = p.isFacultyPermanentStatus() ? "P" : "";
         String expr1 = String.format("%s %s <%s>", p.getFirstName(), p.getLastName(), p.getEmail());
+        String location = locations.get(p.getCostCenter());
 
         String[] rowValues = {
             p.getLastName(),
@@ -88,7 +90,7 @@ public class ExcelGenerator {
             p.getDivision(),
             p.getDepartment(),
             p.getUnit(),
-            p.getLocation(),
+            location,
             fte,
             categoryStatuses,
             facultyPermStatus,

@@ -65,11 +65,6 @@ public class PersonBuilder {
     return this;
   }
 
-  public PersonBuilder location(String location) {
-    person.setLocation(location);
-    return this;
-  }
-
   public PersonBuilder fte(String fte) {
     person.setFte(fte);
     return this;
@@ -113,7 +108,6 @@ class PersonImpl implements Person {
   private String division;
   private String department;
   private String unit;
-  private String location;
   private String fte;
   private List<String> categoryStatuses;
   private boolean facultyPermanentStatus;
@@ -226,15 +220,6 @@ class PersonImpl implements Person {
 
   public void setUnit(String unit) {
     this.unit = unit;
-  }
-
-  @Override
-  public String getLocation() {
-    return location;
-  }
-
-  public void setLocation(String location) {
-    this.location = location;
   }
 
   @Override

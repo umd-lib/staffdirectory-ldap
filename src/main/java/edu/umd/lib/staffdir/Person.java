@@ -67,11 +67,6 @@ public interface Person {
   public String getUnit();
 
   /**
-   * @return the location associated with the cost center for this person.
-   */
-  public String getLocation();
-
-  /**
    * @return the appointment full-time-equivalent for this person.
    */
   public String getFte();

@@ -123,7 +123,6 @@ public class Ldap {
           .division(membershipInfo.getDivision())
           .department(membershipInfo.getDepartment())
           .unit(membershipInfo.getUnit())
-          .location("TODO")
           .fte(membershipInfo.getFte())
           .categoryStatuses(Arrays.asList("TODO"))
           .facultyPermanentStatus(false) // TODO
