@@ -33,8 +33,19 @@ public class Ldap {
       "umCatStatus", "umOptionalTitle", "memberOf"
   };
 
-  public static List<SearchResult> ldapSearch(String ldapUrl, String authentication, String bindDn, String credentials,
+  public static List<Person> ldapSearch(String ldapUrl, String authentication, String bindDn, String credentials,
       String searchBaseDn) {
+    // Set up the environment for creating the initial context
+    Hashtable<String, Object> env = createLdapContext(ldapUrl, authentication, bindDn, credentials);
+
+    List<SearchResult> searchResults = performSearch(env, searchBaseDn);
+    List<Person> persons = getPersons(searchResults);
+
+    return persons;
+  }
+
+  private static Hashtable<String, Object> createLdapContext(String ldapUrl, String authentication, String bindDn,
+      String credentials) {
     // Set up the environment for creating the initial context
     Hashtable<String, Object> env = new Hashtable<String, Object>(11);
     env.put(Context.INITIAL_CONTEXT_FACTORY,
@@ -43,7 +54,10 @@ public class Ldap {
     env.put(Context.SECURITY_AUTHENTICATION, authentication);
     env.put(Context.SECURITY_PRINCIPAL, bindDn);
     env.put(Context.SECURITY_CREDENTIALS, credentials);
+    return env;
+  }
 
+  private static List<SearchResult> performSearch(Hashtable<String, Object> env, String searchBaseDn) {
     List<SearchResult> searchResults = new ArrayList<>();
     try {
       // Create the initial context
@@ -73,11 +87,10 @@ public class Ldap {
     } catch (NamingException e) {
       log.error("Lookup failed.", e);
     }
-
     return searchResults;
   }
 
-  public static List<Person> getPersons(List<SearchResult> searchResults) {
+  private static List<Person> getPersons(List<SearchResult> searchResults) {
     List<Person> persons = new ArrayList<>();
     for (SearchResult sr : searchResults) {
       Person p = createPerson(sr.getAttributes());

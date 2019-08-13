@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import javax.naming.directory.SearchResult;
-
 import edu.umd.lib.staffdir.excel.ExcelGenerator;
 import edu.umd.lib.staffdir.ldap.Ldap;
 
@@ -29,8 +27,7 @@ public class Main {
     String credentials = props.getProperty("ldap.credentials");
     String searchBaseDn = props.getProperty("ldap.searchBaseDn");
 
-    List<SearchResult> searchResults = Ldap.ldapSearch(ldapUrl, authentication, bindDn, credentials, searchBaseDn);
-    List<Person> persons = Ldap.getPersons(searchResults);
+    List<Person> persons = Ldap.ldapSearch(ldapUrl, authentication, bindDn, credentials, searchBaseDn);
 
     // Sort the persons by last name
     Collections.sort(persons, (Person p1, Person p2) -> p1.getLastName().compareTo(p2.getLastName()));
