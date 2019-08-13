@@ -36,6 +36,14 @@ import edu.umd.lib.staffdir.PersonBuilder;
 public class Ldap {
   public static final Logger log = LoggerFactory.getLogger(Ldap.class);
   
+  // Specifies the LDAP attributes to return. Need to create a specific
+  // list, as "memberOf" isn't returned, unless specifically requested.
+  private static final String[] LDAP_ATTRIBUTES = {
+      "uid", "sn", "givenName", "telephoneNumber", "mail",
+      "umOfficialTitle", "umDisplayTitle", "umPrimaryCampusRoom", "umPrimaryCampusBuilding",
+      "umCatStatus", "umOptionalTitle", "memberOf"
+  };
+  
   public static void main(String[] args) {
     Properties props = null;
     try {
@@ -85,14 +93,15 @@ public class Ldap {
       Name name = new LdapName(searchBaseDn);
       SearchControls searchControls = new SearchControls();
       searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-
+      String[] returningAttributes = LDAP_ATTRIBUTES;
+      searchControls.setReturningAttributes(returningAttributes);
       String initialLetters = "abcdefghijklmnopqrstuvwxyz";
       
       // Perform lookup and cast to target type
       
       for(int i = 0; i < initialLetters.length(); i++) {
         String initialLetter = initialLetters.substring(i,i+1);
-        String query = "(&(ou=LIBR-Libraries)(uid=" + initialLetter+"*))";
+        String query = "(&(ou=LIBR-Libraries)(uid=" + initialLetter + "*))";
         NamingEnumeration<SearchResult> results = ctx.search(name, query, searchControls);
         
         while ((results != null) && results.hasMore()) {
@@ -126,6 +135,11 @@ public class Ldap {
     PersonBuilder pb = null;
     try {
       pb = new PersonBuilder();
+      
+      Attribute memberOf = attrs.get("memberOf");
+      List<String> memberships = getMemberships(memberOf);
+      MembershipInfo membershipInfo = new MembershipInfo(memberships);
+      
       pb.uid(getAttrValue(attrs.get("uid")))
         .lastName(getAttrValue(attrs.get("sn")))
         .firstName(getAttrValue(attrs.get("givenName")))
@@ -135,21 +149,35 @@ public class Ldap {
         .jobTitle(getAttrValue(attrs.get("umDisplayTitle")))
         .roomNumber(getAttrValue(attrs.get("umPrimaryCampusRoom")))
         .building(getAttrValue(attrs.get("umPrimaryCampusBuilding")))
-        .division((String) "TODO")
-        .department((String) "TODO")
-        .unit((String) "TODO")
+        .division(membershipInfo.getDivision())
+        .department(membershipInfo.getDepartment())
+        .unit(membershipInfo.getUnit())
         .location((String) "TODO")
         .fte((String) "TODO")
         .categoryStatuses(Arrays.asList("TODO"))
         .facultyPermanentStatus(false) // TODO
         .descriptiveTitle(getAttrValue(attrs.get("umOptionalTitle")))
-        .costCenter((String) "TODO");
+        .costCenter(membershipInfo.getCostCenter());
     } catch(NamingException ne) {
       log.error("Error processing LDAP parameters", ne);
       return null;
     }
     
     return pb.getPerson();
+  }
+  
+  private static List<String> getMemberships(Attribute memberOfAttr) throws NamingException {
+    List<String> memberships = new ArrayList<>();
+    
+    if (memberOfAttr != null) {
+      NamingEnumeration ne = memberOfAttr.getAll();
+      while(ne.hasMore()) {
+        Object obj = ne.next();
+        String str = obj.toString();
+        memberships.add(str);
+      }
+    }
+    return memberships;
   }
   
   private static String getAttrValue(Attribute attr) throws NamingException {
