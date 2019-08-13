@@ -125,7 +125,7 @@ public class Ldap {
           .unit(membershipInfo.getUnit())
           .fte(membershipInfo.getFte())
           .categoryStatuses(Arrays.asList("TODO"))
-          .facultyPermanentStatus(false) // TODO
+          .facultyPermanentStatus(membershipInfo.isFacultyPermanentStatus())
           .descriptiveTitle(getAttrValue(attrs.get("umOptionalTitle")))
           .costCenter(membershipInfo.getCostCenter());
     } catch (NamingException ne) {
