@@ -97,7 +97,7 @@ class MembershipTestCase {
 
   public static MembershipTestCase create(List<String> membersOf, String division, String department, String unit,
       String costCenter, boolean facultyPermanentStatus) {
-    return new MembershipTestCase(membersOf, division, department, unit, costCenter, facultyPermanentStatus, "100.00");
+    return new MembershipTestCase(membersOf, division, department, unit, costCenter, facultyPermanentStatus, null);
   }
 
   public static MembershipTestCase create(List<String> membersOf, String division, String department, String unit,
@@ -113,7 +113,7 @@ class MembershipTestCase {
     this.unit = unit;
     this.costCenter = costCenter;
     this.facultyPermanentStatus = facultyPermanentStatus;
-    this.fte = "100.00";
+    this.fte = null;
   }
 
   public MembershipTestCase(List<String> membersOf, String division, String department, String unit, String costCenter,
