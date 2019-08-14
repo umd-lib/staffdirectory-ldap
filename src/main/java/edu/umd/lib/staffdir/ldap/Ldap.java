@@ -74,7 +74,9 @@ public class Ldap {
 
       for (int i = 0; i < initialLetters.length(); i++) {
         String initialLetter = initialLetters.substring(i, i + 1);
-        String query = "(&(ou=LIBR-Libraries)(uid=" + initialLetter + "*))";
+        String query = String.format(
+            "(&(ou=LIBR-Libraries)(uid=%s*)(umHourlyStudentEmployee=FALSE))",
+            initialLetter);
         NamingEnumeration<SearchResult> results = ctx.search(name, query, searchControls);
 
         while ((results != null) && results.hasMore()) {

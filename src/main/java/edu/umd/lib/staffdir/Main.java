@@ -97,7 +97,8 @@ public class Main {
     List<Person> persons = Ldap.ldapSearch(ldapUrl, authentication, bindDn, credentials, searchBaseDn);
 
     // Sort the persons by last name
-    Collections.sort(persons, (Person p1, Person p2) -> p1.getLastName().compareTo(p2.getLastName()));
+    Collections.sort(persons,
+        (Person p1, Person p2) -> p1.getLastName().toLowerCase().compareTo(p2.getLastName().toLowerCase()));
 
     ExcelGenerator.generate(outputFilename, persons, "abcd", locations);
   }
