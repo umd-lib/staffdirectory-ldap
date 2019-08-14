@@ -20,38 +20,38 @@
     <poi.version>4.0.1</poi.version>
     <commons-cli.version>1.4</commons-cli.version>
     <log4j2.version>2.8.2</log4j2.version>
- 	<junit.version>4.12</junit.version>
+    <junit.version>4.12</junit.version>
     <jackson.version>2.9.9</jackson.version>
-    
+
     <!-- Checkstyle -->
-    <!-- checkstyle.version corresponds to Eclipse Checkstyle plugin version-->
+    <!-- checkstyle.version corresponds to Eclipse Checkstyle plugin version -->
     <checkstyle.version>8.12</checkstyle.version>
     <maven.checkstyle.version>3.0.0</maven.checkstyle.version>
     <maven.jxr.version>3.0.0</maven.jxr.version>
     <checkstyle.config.location>build-tools/checkstyle.xml</checkstyle.config.location>
   </properties>
 
-  <dependencies>    
+  <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
-    
-	<dependency>
-	    <groupId>org.apache.poi</groupId>
-	    <artifactId>poi</artifactId>
-	    <version>${poi.version}</version>
-	</dependency>
-	
-	<dependency>
-	  <groupId>org.apache.poi</groupId>
-	  <artifactId>poi-ooxml</artifactId>
-	    <version>${poi.version}</version>
-	</dependency>
-	
+
     <dependency>
-	  <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+      <version>${poi.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <version>${poi.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
       <version>${jackson.version}</version>
     </dependency>
@@ -61,13 +61,13 @@
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>commons-cli</groupId>
       <artifactId>commons-cli</artifactId>
       <version>${commons-cli.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -91,7 +91,7 @@
   </dependencies>
 
   <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+    <pluginManagement>
       <plugins>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
         <plugin>
@@ -132,7 +132,7 @@
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.0.0</version>
         </plugin>
-        
+
         <!-- Checkstyle -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
