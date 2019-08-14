@@ -4,3 +4,4 @@
 target/
 
 ldap.properties
+dependency-reduced-pom.xml
