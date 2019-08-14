@@ -33,6 +33,21 @@ public class Ldap {
       "umCatStatus", "umOptionalTitle", "memberOf"
   };
 
+  /**
+   * Queries LDAP and returns a list of Persons matching the search.
+   *
+   * @param ldapUrl
+   *          the LDAP URL
+   * @param authentication
+   *          the LDAP authentication mechanism
+   * @param bindDn
+   *          the DN to use for authentication
+   * @param credentials
+   *          the password associated with the bind DN
+   * @param searchBaseDn
+   *          the base DN at which to start the search.
+   * @return a a list of Persons matching the search.
+   */
   public static List<Person> ldapSearch(String ldapUrl, String authentication, String bindDn, String credentials,
       String searchBaseDn) {
     // Set up the environment for creating the initial context
@@ -44,6 +59,19 @@ public class Ldap {
     return persons;
   }
 
+  /**
+   * Returns a Hashtable representing the LDAP environment context
+   *
+   * @param ldapUrl
+   *          the LDAP URL
+   * @param authentication
+   *          the LDAP authentication mechanism
+   * @param bindDn
+   *          the DN to use for authentication
+   * @param credentials
+   *          the password associated with the bind DN
+   * @return a Hashtable representing the LDAP environment context
+   */
   private static Hashtable<String, Object> createLdapContext(String ldapUrl, String authentication, String bindDn,
       String credentials) {
     // Set up the environment for creating the initial context
@@ -57,6 +85,16 @@ public class Ldap {
     return env;
   }
 
+  /**
+   * Performs the LDAP search, returning a list of SearchResults matching the
+   * search.
+   *
+   * @param env
+   *          the Hashtable representing the LDAP environment context
+   * @param searchBaseDn
+   *          the base DN at which to start the search.
+   * @return a list of SearchResults matching the search.
+   */
   private static List<SearchResult> performSearch(Hashtable<String, Object> env, String searchBaseDn) {
     List<SearchResult> searchResults = new ArrayList<>();
     try {
@@ -92,6 +130,13 @@ public class Ldap {
     return searchResults;
   }
 
+  /**
+   * Returns a List of Persons, converted from the given List of SearchResults
+   *
+   * @param searchResults
+   *          the List of SearchResults to convert
+   * @return a List of Persons, converted from the given List of SearchResults
+   */
   private static List<Person> getPersons(List<SearchResult> searchResults) {
     List<Person> persons = new ArrayList<>();
     for (SearchResult sr : searchResults) {
@@ -104,6 +149,13 @@ public class Ldap {
     return persons;
   }
 
+  /**
+   * Returns a Person, created from the given list of Attributes
+   *
+   * @param attrs
+   *          the Attributes to use in creating the Person.
+   * @return a Person, created from the given list of Attributes
+   */
   private static Person createPerson(Attributes attrs) {
     PersonBuilder pb = null;
     try {
@@ -138,6 +190,17 @@ public class Ldap {
     return pb.getPerson();
   }
 
+  /**
+   * Returns a List of String representing the "memberOf" values from the given
+   * attribute.
+   *
+   * @param memberOfAttr
+   *          the "memberOf" attribute to retrieve the values of.
+   * @return a List of String representing the "memberOf" values from the given
+   *         attribute.
+   * @throws NamingException
+   *           if a naming exception occurs when retrieving the values.
+   */
   private static List<String> getMemberships(Attribute memberOfAttr) throws NamingException {
     List<String> memberships = new ArrayList<>();
 
@@ -152,6 +215,15 @@ public class Ldap {
     return memberships;
   }
 
+  /**
+   * Returns a String representing the value of the given attribute.
+   *
+   * @param attr
+   *          the attribute to retrieve the value of
+   * @return a String representing the value of the given attribute.
+   * @throws NamingException
+   *           if a naming exception occurs when retrieving the values.
+   */
   private static String getAttrValue(Attribute attr) throws NamingException {
     if (attr == null) {
       return null;

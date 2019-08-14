@@ -24,9 +24,24 @@ import org.slf4j.LoggerFactory;
 
 import edu.umd.lib.staffdir.Person;
 
+/**
+ * Creates an Excel spreadsheet from a List of Persons
+ */
 public class ExcelGenerator {
   public static final Logger log = LoggerFactory.getLogger(ExcelGenerator.class);
 
+  /**
+   * Generates an Excel spreadsheet from the provided information
+   *
+   * @param filename
+   *          the filename of the Excel spreadsheet
+   * @param persons
+   *          the List of persons to include in the spreadsheet
+   * @param password
+   *          the password to set on the Excel spreadsheet to protect it.
+   * @param locations
+   *          the mapping of cost centers to locations
+   */
   public static void generate(String filename, List<Person> persons, String password, Map<String, String> locations) {
     try (Workbook wb = new XSSFWorkbook()) {
 

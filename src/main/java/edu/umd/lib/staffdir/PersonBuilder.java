@@ -2,6 +2,9 @@ package edu.umd.lib.staffdir;
 
 import java.util.List;
 
+/**
+ * Builder for constructing a Person object, using a fluent interface.
+ */
 public class PersonBuilder {
   private PersonImpl person = new PersonImpl();
 
@@ -95,6 +98,9 @@ public class PersonBuilder {
   }
 }
 
+/**
+ * Implementation of the Person interface
+ */
 class PersonImpl implements Person {
   private String uid;
   private String lastName;

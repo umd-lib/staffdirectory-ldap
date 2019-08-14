@@ -81,6 +81,9 @@ public class MembershipProcessorTest {
   }
 }
 
+/**
+ * Encapsulate a particular test case
+ */
 class MembershipTestCase {
   public final List<String> membersOf;
   public final String division;
