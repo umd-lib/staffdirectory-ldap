@@ -1,7 +1,5 @@
 package edu.umd.lib.staffdir;
 
-import java.util.List;
-
 /**
  * Encapsulates information for a single person.
  */
@@ -72,9 +70,9 @@ public interface Person {
   public String getFte();
 
   /**
-   * @return the List of category statuses associated with this person.
+   * @return the category status associated with this person.
    */
-  public List<String> getCategoryStatuses();
+  public String getCategoryStatus();
 
   /**
    * @return true if this person has Faculty Permanent Status, false otherwise.

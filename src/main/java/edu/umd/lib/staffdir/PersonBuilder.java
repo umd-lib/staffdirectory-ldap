@@ -1,7 +1,5 @@
 package edu.umd.lib.staffdir;
 
-import java.util.List;
-
 /**
  * Builder for constructing a Person object, using a fluent interface.
  */
@@ -73,8 +71,8 @@ public class PersonBuilder {
     return this;
   }
 
-  public PersonBuilder categoryStatuses(List<String> categoryStatuses) {
-    person.setCategoryStatuses(categoryStatuses);
+  public PersonBuilder categoryStatus(String categoryStatus) {
+    person.setCategoryStatus(categoryStatus);
     return this;
   }
 
@@ -115,7 +113,7 @@ class PersonImpl implements Person {
   private String department;
   private String unit;
   private String fte;
-  private List<String> categoryStatuses;
+  private String categoryStatus;
   private boolean facultyPermanentStatus;
   private String descriptiveTitle;
   private String costCenter;
@@ -238,12 +236,12 @@ class PersonImpl implements Person {
   }
 
   @Override
-  public List<String> getCategoryStatuses() {
-    return categoryStatuses;
+  public String getCategoryStatus() {
+    return categoryStatus;
   }
 
-  public void setCategoryStatuses(List<String> categoryStatuses) {
-    this.categoryStatuses = categoryStatuses;
+  public void setCategoryStatus(String categoryStatus) {
+    this.categoryStatus = categoryStatus;
   }
 
   @Override

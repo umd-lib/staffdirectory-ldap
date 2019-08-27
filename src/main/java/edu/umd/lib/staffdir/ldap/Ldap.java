@@ -1,7 +1,6 @@
 package edu.umd.lib.staffdir.ldap;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -178,7 +177,7 @@ public class Ldap {
           .department(membershipInfo.getDepartment())
           .unit(membershipInfo.getUnit())
           .fte(membershipInfo.getFte())
-          .categoryStatuses(Arrays.asList("TODO"))
+          .categoryStatus(getAttrValue(attrs.get("umCatStatus")))
           .facultyPermanentStatus(membershipInfo.isFacultyPermanentStatus())
           .descriptiveTitle(getAttrValue(attrs.get("umOptionalTitle")))
           .costCenter(membershipInfo.getCostCenter());
