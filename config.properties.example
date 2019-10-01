@@ -1,7 +1,22 @@
-# LDAP properties example file
+# Configuration example file
 #
 # This file should be copied to "ldap.properties"
 # and filled in with the appropriate values
+
+# Google Configuration
+
+# The name of the application to provide to the Google API
+appName=staffdirectory-ldap
+
+# The fully-qualified path and filename to the JSON file
+# containing the service account credentials
+clientSecretFile=
+
+# The spreadsheet document id (from the URL)
+spreadsheetDocId=
+
+
+# LDAP Configuration
 
 # The fully-qualified URL to the LDAP server
 ldap.url=
