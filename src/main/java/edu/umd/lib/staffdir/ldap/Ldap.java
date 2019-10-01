@@ -1,8 +1,11 @@
 package edu.umd.lib.staffdir.ldap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.Name;
@@ -18,44 +21,87 @@ import javax.naming.ldap.LdapName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.lib.staffdir.Person;
-import edu.umd.lib.staffdir.PersonBuilder;
-
 public class Ldap {
   public static final Logger log = LoggerFactory.getLogger(Ldap.class);
+
+  private String ldapUrl;
+  private String authentication;
+  private String bindDn;
+  private String credentials;
+  private String searchBaseDn;
 
   // Specifies the LDAP attributes to return. Need to create a specific
   // list, as "memberOf" isn't returned, unless specifically requested.
   private static final String[] LDAP_ATTRIBUTES = {
       "uid", "sn", "givenName", "telephoneNumber", "mail",
       "umOfficialTitle", "umDisplayTitle", "umPrimaryCampusRoom", "umPrimaryCampusBuilding",
-      "umCatStatus", "umOptionalTitle", "memberOf"
+      "umCatStatus", "umOptionalTitle"
   };
 
-  /**
-   * Queries LDAP and returns a list of Persons matching the search.
-   *
-   * @param ldapUrl
-   *          the LDAP URL
-   * @param authentication
-   *          the LDAP authentication mechanism
-   * @param bindDn
-   *          the DN to use for authentication
-   * @param credentials
-   *          the password associated with the bind DN
-   * @param searchBaseDn
-   *          the base DN at which to start the search.
-   * @return a a list of Persons matching the search.
-   */
-  public static List<Person> ldapSearch(String ldapUrl, String authentication, String bindDn, String credentials,
+  public Ldap(String ldapUrl, String authentication, String bindDn, String credentials,
       String searchBaseDn) {
-    // Set up the environment for creating the initial context
-    Hashtable<String, Object> env = createLdapContext(ldapUrl, authentication, bindDn, credentials);
+    this.ldapUrl = ldapUrl;
+    this.authentication = authentication;
+    this.bindDn = bindDn;
+    this.credentials = credentials;
+    this.searchBaseDn = searchBaseDn;
 
-    List<SearchResult> searchResults = performSearch(env, searchBaseDn);
-    List<Person> persons = getPersons(searchResults);
+  }
 
-    return persons;
+  /**
+   * Returns a list of Strings, which represent LDAP filter queries for multiple
+   * uids.
+   * <p>
+   * This method is intended as an optimization, so that fewer LDAP queries are
+   * performed.
+   *
+   * @param uids
+   *          the List of all uids to query
+   * @param batchSize
+   *          the number of uids to include in each LDAP query
+   * @return a List of LDAP filter query strings, containing up to the given
+   *         batchSize number of uids.
+   */
+  protected static List<String> getQueryBatches(List<String> uids, int batchSize) {
+    List<String> queryBatches = new ArrayList<>();
+
+    if (uids == null) {
+      return queryBatches;
+    }
+
+    Iterator<String> uidIter = uids.iterator();
+    int currentSize = 0;
+
+    while (uidIter.hasNext()) {
+      StringBuilder sb = new StringBuilder("(|");
+      while (uidIter.hasNext() && (currentSize < batchSize)) {
+        String uid = uidIter.next();
+        sb.append("(uid=" + uid + ")");
+        currentSize++;
+      }
+      sb.append(")");
+      queryBatches.add(sb.toString());
+      currentSize = 0;
+    }
+    return queryBatches;
+  }
+
+  public Map<String, Map<String, String>> getUsers(List<String> uids) {
+    Map<String, Map<String, String>> results = new HashMap<>();
+    Hashtable<String, Object> env = createLdapContext();
+    int batchSize = 50;
+    List<String> queryBatches = getQueryBatches(uids, batchSize);
+    for (String uidBatchQuery : queryBatches) {
+      List<SearchResult> searchResults = performSearch(env, this.searchBaseDn, uidBatchQuery);
+      for (SearchResult searchResult : searchResults) {
+        Map<String, String> m = asMap(searchResult);
+        String uid = m.get("uid");
+        results.put(uid, m);
+      }
+
+    }
+
+    return results;
   }
 
   /**
@@ -71,31 +117,33 @@ public class Ldap {
    *          the password associated with the bind DN
    * @return a Hashtable representing the LDAP environment context
    */
-  private static Hashtable<String, Object> createLdapContext(String ldapUrl, String authentication, String bindDn,
-      String credentials) {
+  private Hashtable<String, Object> createLdapContext() {
     // Set up the environment for creating the initial context
     Hashtable<String, Object> env = new Hashtable<String, Object>(11);
     env.put(Context.INITIAL_CONTEXT_FACTORY,
         "com.sun.jndi.ldap.LdapCtxFactory");
-    env.put(Context.PROVIDER_URL, ldapUrl);
-    env.put(Context.SECURITY_AUTHENTICATION, authentication);
-    env.put(Context.SECURITY_PRINCIPAL, bindDn);
-    env.put(Context.SECURITY_CREDENTIALS, credentials);
+    env.put(Context.PROVIDER_URL, this.ldapUrl);
+    env.put(Context.SECURITY_AUTHENTICATION, this.authentication);
+    env.put(Context.SECURITY_PRINCIPAL, this.bindDn);
+    env.put(Context.SECURITY_CREDENTIALS, this.credentials);
     return env;
   }
 
   /**
-   * Performs the LDAP search, returning a list of SearchResults matching the
-   * search.
+   * Performs the LDAP search, the SearchResult with the given uid.
    *
    * @param env
    *          the Hashtable representing the LDAP environment context
    * @param searchBaseDn
    *          the base DN at which to start the search.
-   * @return a list of SearchResults matching the search.
+   * @param uid
+   *          the uid for the user to return
+   * @return the first SearchResult matching the search, or null if the uid was
+   *         not found.
    */
-  private static List<SearchResult> performSearch(Hashtable<String, Object> env, String searchBaseDn) {
+  private static List<SearchResult> performSearch(Hashtable<String, Object> env, String searchBaseDn, String uidQuery) {
     List<SearchResult> searchResults = new ArrayList<>();
+
     try {
       // Create the initial context
       InitialLdapContext ctx = new InitialLdapContext(env, null);
@@ -105,22 +153,15 @@ public class Ldap {
       searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
       String[] returningAttributes = LDAP_ATTRIBUTES;
       searchControls.setReturningAttributes(returningAttributes);
-      String initialLetters = "abcdefghijklmnopqrstuvwxyz";
 
       // Perform lookup and cast to target type
-
-      for (int i = 0; i < initialLetters.length(); i++) {
-        String initialLetter = initialLetters.substring(i, i + 1);
-        String query = String.format(
-            "(&(ou=LIBR-Libraries)(uid=%s*)(umHourlyStudentEmployee=FALSE))",
-            initialLetter);
-        NamingEnumeration<SearchResult> results = ctx.search(name, query, searchControls);
-
-        while ((results != null) && results.hasMore()) {
-          SearchResult sr = results.next();
-          searchResults.add(sr);
-        }
+      String query = uidQuery;
+      NamingEnumeration<SearchResult> results = ctx.search(name, query, searchControls);
+      while ((results != null) && results.hasMore()) {
+        SearchResult sr = results.next();
+        searchResults.add(sr);
       }
+
       // Close the context when we're done
       ctx.close();
     } catch (NamingException e) {
@@ -136,16 +177,8 @@ public class Ldap {
    *          the List of SearchResults to convert
    * @return a List of Persons, converted from the given List of SearchResults
    */
-  private static List<Person> getPersons(List<SearchResult> searchResults) {
-    List<Person> persons = new ArrayList<>();
-    for (SearchResult sr : searchResults) {
-      Person p = createPerson(sr.getAttributes());
-      if (p != null) {
-        persons.add(p);
-      }
-    }
-
-    return persons;
+  private static Map<String, String> asMap(SearchResult searchResult) {
+    return asMap(searchResult.getAttributes());
   }
 
   /**
@@ -155,63 +188,19 @@ public class Ldap {
    *          the Attributes to use in creating the Person.
    * @return a Person, created from the given list of Attributes
    */
-  private static Person createPerson(Attributes attrs) {
-    PersonBuilder pb = null;
+  private static Map<String, String> asMap(Attributes attrs) {
+    Map<String, String> result = new HashMap<>();
     try {
-      pb = new PersonBuilder();
+      for (String key : LDAP_ATTRIBUTES) {
+        result.put(key, getAttrValue(attrs.get(key)));
+      }
 
-      Attribute memberOf = attrs.get("memberOf");
-      List<String> memberships = getMemberships(memberOf);
-      MembershipInfo membershipInfo = new MembershipInfo(memberships);
-
-      pb.uid(getAttrValue(attrs.get("uid")))
-          .lastName(getAttrValue(attrs.get("sn")))
-          .firstName(getAttrValue(attrs.get("givenName")))
-          .phoneNumber(getAttrValue(attrs.get("telephoneNumber")))
-          .email(getAttrValue(attrs.get("mail")))
-          .officialTitle(getAttrValue(attrs.get("umOfficialTitle")))
-          .jobTitle(getAttrValue(attrs.get("umDisplayTitle")))
-          .roomNumber(getAttrValue(attrs.get("umPrimaryCampusRoom")))
-          .building(getAttrValue(attrs.get("umPrimaryCampusBuilding")))
-          .division(membershipInfo.getDivision())
-          .department(membershipInfo.getDepartment())
-          .unit(membershipInfo.getUnit())
-          .fte(membershipInfo.getFte())
-          .categoryStatus(getAttrValue(attrs.get("umCatStatus")))
-          .facultyPermanentStatus(membershipInfo.isFacultyPermanentStatus())
-          .descriptiveTitle(getAttrValue(attrs.get("umOptionalTitle")))
-          .costCenter(membershipInfo.getCostCenter());
     } catch (NamingException ne) {
       log.error("Error processing LDAP parameters", ne);
-      return null;
+      return result;
     }
 
-    return pb.getPerson();
-  }
-
-  /**
-   * Returns a List of String representing the "memberOf" values from the given
-   * attribute.
-   *
-   * @param memberOfAttr
-   *          the "memberOf" attribute to retrieve the values of.
-   * @return a List of String representing the "memberOf" values from the given
-   *         attribute.
-   * @throws NamingException
-   *           if a naming exception occurs when retrieving the values.
-   */
-  private static List<String> getMemberships(Attribute memberOfAttr) throws NamingException {
-    List<String> memberships = new ArrayList<>();
-
-    if (memberOfAttr != null) {
-      NamingEnumeration<?> ne = memberOfAttr.getAll();
-      while (ne.hasMore()) {
-        Object obj = ne.next();
-        String str = obj.toString();
-        memberships.add(str);
-      }
-    }
-    return memberships;
+    return result;
   }
 
   /**
