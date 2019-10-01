@@ -8,13 +8,17 @@ Java application for generating an Excel spreadsheet from LDAP.
 
 The following file is used to configure the application.
 
-### ldap.properties
+### config.properties
 
-A properties file for specifying the LDAP connection information.
+A properties file for specifying application configuration, including:
 
-A sample "ldap.properties.example" file has been included in this repository.
+* the LDAP connection information
+* the Google Sheets API credentials
+* the Google Sheets document to retrive
 
-Copy the "ldap.properties.example" to "ldap.properties" and fill in the
+A sample "config.properties.example" file has been included in this repository.
+
+Copy the "config.properties.example" to "config.properties" and fill in the
 appropriate values.
 
 ## Running the application
@@ -32,24 +36,24 @@ subdirectory, where \<VERSION> is the Maven version number.
 To run the application, use the following command:
 
 ```
-> java -jar target/staffdirectory-ldap-<VERSION>.jar --config <LDAP CONFIG FILE> --out <EXCEL OUTPUT FILE>
+> java -jar target/staffdirectory-ldap-<VERSION>.jar --config <CONFIG FILE> --out <EXCEL OUTPUT FILE>
 ```
 where:
  
 * \<VERSION> is the Maven version number
-* \<LDAP CONFIG FILE> is the path to the LDAP configuration properties file
+* \<CONFIG FILE> is the path to the configuration properties file
 * \<EXCEL OUTPUT FILE> the path location to create the Excel spreadsheet
  
 For example, using
  
 * \<VERSION> - "1.0.0-SNAPSHOT"
-* \<LDAP CONFIG FILE> - "ldap.properties"
+* \<CONFIG FILE> - "config.properties"
 * \<EXCEL OUTPUT FILE> - "test.xlsx"
 
 the command would be:
 
 ```
-> java -jar target/staffdirectory-ldap-1.0.0-SNAPSHOT.jar --config ldap.properties --out test.xlsx
+> java -jar target/staffdirectory-ldap-1.0.0-SNAPSHOT.jar --config config.properties --out test.xlsx
 ```
 
 ## License
