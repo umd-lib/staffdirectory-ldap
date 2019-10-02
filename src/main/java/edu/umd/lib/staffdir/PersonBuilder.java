@@ -91,6 +91,11 @@ public class PersonBuilder {
     return this;
   }
 
+  public PersonBuilder location(String location) {
+    person.setLocation(location);
+    return this;
+  }
+
   public Person getPerson() {
     return person;
   }
@@ -117,6 +122,7 @@ class PersonImpl implements Person {
   private boolean facultyPermanentStatus;
   private String descriptiveTitle;
   private String costCenter;
+  private String location;
 
   @Override
   public String getUid() {
@@ -269,6 +275,15 @@ class PersonImpl implements Person {
 
   public void setCostCenter(String costCenter) {
     this.costCenter = costCenter;
+  }
+
+  @Override
+  public String getLocation() {
+    return location;
+  }
+
+  public void setLocation(String location) {
+    this.location = location;
   }
 
   @Override

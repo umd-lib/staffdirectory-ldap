@@ -85,7 +85,6 @@ public class ExcelGenerator {
 
         String facultyPermStatus = p.isFacultyPermanentStatus() ? "P" : "";
         String expr1 = String.format("%s %s <%s>", p.getFirstName(), p.getLastName(), p.getEmail());
-        String location = "TODO";
 
         String[] rowValues = {
             p.getLastName(),
@@ -98,7 +97,7 @@ public class ExcelGenerator {
             p.getDivision(),
             p.getDepartment(),
             p.getUnit(),
-            location,
+            p.getLocation(),
             fte,
             categoryStatus,
             facultyPermStatus,
