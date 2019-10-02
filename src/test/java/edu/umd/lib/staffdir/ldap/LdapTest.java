@@ -3,9 +3,10 @@ package edu.umd.lib.staffdir.ldap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -17,11 +18,12 @@ public class LdapTest {
     assertTrue(batches.isEmpty());
 
     // Empty uids list
-    batches = Ldap.getQueryBatches(new ArrayList<String>(), 10);
+    batches = Ldap.getQueryBatches(new LinkedHashSet<String>(), 10);
     assertTrue(batches.isEmpty());
 
     // Batches of various sizes
-    List<String> uids = Arrays.asList("uid1", "uid2", "uid3", "uid4", "uid5");
+    // Using LinkedHashSet to preserve order for asserts
+    Set<String> uids = new LinkedHashSet<>(Arrays.asList("uid1", "uid2", "uid3", "uid4", "uid5"));
 
     batches = Ldap.getQueryBatches(uids, 1);
     assertEquals(5, batches.size());

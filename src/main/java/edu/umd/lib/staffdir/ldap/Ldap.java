@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.naming.Context;
 import javax.naming.Name;
@@ -62,7 +63,7 @@ public class Ldap {
    * @return a List of LDAP filter query strings, containing up to the given
    *         batchSize number of uids.
    */
-  protected static List<String> getQueryBatches(List<String> uids, int batchSize) {
+  protected static List<String> getQueryBatches(Set<String> uids, int batchSize) {
     List<String> queryBatches = new ArrayList<>();
 
     if (uids == null) {
@@ -86,7 +87,7 @@ public class Ldap {
     return queryBatches;
   }
 
-  public Map<String, Map<String, String>> getUsers(List<String> uids) {
+  public Map<String, Map<String, String>> getUsers(Set<String> uids) {
     Map<String, Map<String, String>> results = new HashMap<>();
     Hashtable<String, Object> env = createLdapContext();
     int batchSize = 50;
