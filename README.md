@@ -6,14 +6,25 @@ Java application for generating an Excel spreadsheet from LDAP.
 
 ## Application configuration
 
-The following file is used to configure the application.
+### Google Sheets configuration
+
+This application communicates with Google via a Google service account, and
+the private key file for the account must be accessible to the application.
+
+The project associated with the service account must have the
+"Google Sheets API" enabled.
+
+Also, the service account must have "view" permission to Google Sheets document
+being read. To do this, simply share the document with the email address
+specified in the the "client_email" field of the private key file.
 
 ### config.properties
 
-A properties file for specifying application configuration, including:
+A "config.proprties" file is used for specifying application configuration,
+including:
 
 * the LDAP connection information
-* the Google Sheets API credentials
+* the Google service account credentials file
 * the Google Sheets document to retrive
 
 A sample "config.properties.example" file has been included in this repository.
