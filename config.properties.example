@@ -10,7 +10,7 @@ appName=staffdirectory-ldap
 
 # The fully-qualified path and filename to the JSON file
 # containing the service account credentials
-clientSecretFile=
+serviceAccountCredentialsFile=
 
 # The spreadsheet document id (from the URL)
 spreadsheetDocId=

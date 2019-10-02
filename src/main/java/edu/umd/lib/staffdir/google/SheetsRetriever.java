@@ -22,15 +22,30 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
+/**
+ * Converts a single sheet in a Google Sheets document into a List of Maps.
+ * <p>
+ * This class assumes the first row of the sheet is the list of headers to use
+ * as the keys for the map.
+ */
 public class SheetsRetriever {
   public static final Logger log = LoggerFactory.getLogger(SheetsRetriever.class);
 
   private final String appName;
-  private final String clientSecretFile;
+  private final String serviceAccountCredentialsFile;
 
-  public SheetsRetriever(String appName, String clientSecretFile) {
+  /**
+   * Constructs a SheetsRetriever object.
+   *
+   * @param appName
+   *          the application name to provide to Google
+   * @param serviceAccountCredentialsFile
+   *          the fully-qualified path to the file containing the service
+   *          account authentication credentials.
+   */
+  public SheetsRetriever(String appName, String serviceAccountCredentialsFile) {
     this.appName = appName;
-    this.clientSecretFile = clientSecretFile;
+    this.serviceAccountCredentialsFile = serviceAccountCredentialsFile;
   }
 
   /**
@@ -44,7 +59,7 @@ public class SheetsRetriever {
    */
   private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
     GoogleCredential credential = GoogleCredential.fromStream(
-        new FileInputStream(this.clientSecretFile))
+        new FileInputStream(this.serviceAccountCredentialsFile))
         .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS_READONLY));
     return credential;
   }
@@ -64,7 +79,7 @@ public class SheetsRetriever {
     try {
       // Build a new authorized API client service.
       final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-      final String spreadsheetId = "1XCKyrL_fooOnDmcjq7WVo4zLfm5zWrkFbboyr_1Z1bY";
+      final String spreadsheetId = spreadsheetDocId;
       JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
       Credential credentials = getCredentials(HTTP_TRANSPORT);
       Sheets service = new Sheets.Builder(HTTP_TRANSPORT, jsonFactory, credentials)
@@ -146,14 +161,5 @@ public class SheetsRetriever {
       log.debug("\n");
     }
     return results;
-  }
-
-  public static void main(String[] args) {
-    SheetsRetriever sr = new SheetsRetriever("staffdirectory-ldap", "/tmp/service_account.json");
-    List<Map<String, String>> results = sr.toMap("1-JIxCZVu759FzyqCmJudewaSNKQeap3KGQxd1kMiw5o", "Staff");
-    Map<String, String> r = results.get(0);
-    for (String key : r.keySet()) {
-      System.out.println(key + ": '" + r.get(key) + "'");
-    }
   }
 }

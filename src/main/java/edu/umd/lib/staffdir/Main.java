@@ -76,9 +76,9 @@ public class Main {
 
     // Google configuration Settings
     String appName = props.getProperty("appName");
-    String clientSecretFile = props.getProperty("clientSecretFile");
+    String serviceAccountCredentialsFile = props.getProperty("serviceAccountCredentialsFile");
     String spreadsheetDocId = props.getProperty("spreadsheetDocId");
-    SheetsRetriever sr = new SheetsRetriever(appName, clientSecretFile);
+    SheetsRetriever sr = new SheetsRetriever(appName, serviceAccountCredentialsFile);
 
     List<Map<String, String>> rawOrganizationsList = sr.toMap(spreadsheetDocId, "Organization");
     List<Map<String, String>> rawStaffMap = sr.toMap(spreadsheetDocId, "Staff");
