@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -49,10 +50,17 @@ public class ExcelGenerator {
       // Header row
       String[] columnTitles = {
           "LastName", "FirstName", "PhoneNumber", "E-mail", "Title", "RoomNo",
-          "Bldg", "Division", "Department", "Unit", "Location", "Appy Fte",
+          "Bldg", "Division", "Department", "Unit", "Location", "Appt Fte",
           "Category Status", "Faculty Perm Status", "Descriptive Title",
           "Expr1", "CostCenter"
       };
+
+      // Get column index of "Appy Fte" column, as it needs to be formatted
+      // as a percentage.
+      int fteColIndex = IntStream.range(0, columnTitles.length)
+          .filter(i -> "Appy Fte".equals(columnTitles[i]))
+          .findFirst() // first occurrence
+          .orElse(-1);
 
       // Gray background
       CellStyle style = wb.createCellStyle();
@@ -76,11 +84,14 @@ public class ExcelGenerator {
 
       rowIndex++;
 
+      // Percentage style
+      CellStyle percentageStyle = wb.createCellStyle();
+      percentageStyle.setDataFormat(wb.createDataFormat().getFormat("0.00%"));
+
       // Data rows
       for (Person p : persons) {
         row = sheet.createRow(rowIndex);
 
-        String fte = (p.getFte() == null) ? "100.00%" : (p.getFte() + "%");
         String categoryStatus = p.getCategoryStatus();
 
         String facultyPermStatus = p.isFacultyPermanentStatus() ? "P" : "";
@@ -98,7 +109,7 @@ public class ExcelGenerator {
             p.getDepartment(),
             p.getUnit(),
             p.getLocation(),
-            fte,
+            "fte_as_percentage",
             categoryStatus,
             facultyPermStatus,
             p.getDescriptiveTitle(),
@@ -111,6 +122,15 @@ public class ExcelGenerator {
 
           Cell cell = row.createCell(colIndex);
           cell.setCellValue(value);
+
+          // Special handling for FTE -- shown as a percentage
+          if ("fte_as_percentage".equals(value)) {
+            String fte = (p.getFte() == null) ? "100" : p.getFte();
+            double fteAsDouble = Double.parseDouble(fte);
+            double fteAsPercent = fteAsDouble / 100.0;
+            cell.setCellValue(fteAsPercent);
+            cell.setCellStyle(percentageStyle);
+          }
         }
 
         rowIndex++;
