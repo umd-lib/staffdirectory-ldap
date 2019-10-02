@@ -146,7 +146,8 @@ public class Main {
         .costCenter(costCenter)
         .facultyPermanentStatus(facultyPermStatus)
         .descriptiveTitle(ldapResult.get("umOptionalTitle"))
-        .location(organization.get("Location"));
+        .location(organization.get("Location"))
+        .functionalTitle(staffEntry.get("Functional Title"));
 
     return pb.getPerson();
 

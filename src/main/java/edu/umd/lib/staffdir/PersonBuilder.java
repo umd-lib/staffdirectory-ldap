@@ -96,6 +96,11 @@ public class PersonBuilder {
     return this;
   }
 
+  public PersonBuilder functionalTitle(String functionalTitle) {
+    person.setFunctionalTitle(functionalTitle);
+    return this;
+  }
+
   public Person getPerson() {
     return person;
   }
@@ -123,6 +128,7 @@ class PersonImpl implements Person {
   private String descriptiveTitle;
   private String costCenter;
   private String location;
+  private String functionalTitle;
 
   @Override
   public String getUid() {
@@ -284,6 +290,15 @@ class PersonImpl implements Person {
 
   public void setLocation(String location) {
     this.location = location;
+  }
+
+  @Override
+  public String getFunctionalTitle() {
+    return functionalTitle;
+  }
+
+  public void setFunctionalTitle(String functionalTitle) {
+    this.functionalTitle = functionalTitle;
   }
 
   @Override

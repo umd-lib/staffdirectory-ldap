@@ -93,4 +93,9 @@ public interface Person {
    * @return the location associated with this person
    */
   public String getLocation();
+
+  /**
+   * @return the functional title associated with this person
+   */
+  public String getFunctionalTitle();
 }
