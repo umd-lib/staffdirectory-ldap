@@ -6,21 +6,31 @@ Java application for generating an Excel spreadsheet from LDAP.
 
 ## Application configuration
 
-The following files are used to configure the application.
+### Google Sheets configuration
 
-### ldap.properties
+This application communicates with Google via a Google service account, and
+the private key file for the account must be accessible to the application.
 
-A properties file for specifying the LDAP connection information.
+The project associated with the service account must have the
+"Google Sheets API" enabled.
 
-A sample "ldap.properties.example" file has been included in this repository.
+Also, the service account must have "view" permission to Google Sheets document
+being read. To do this, simply share the document with the email address
+specified in the the "client_email" field of the private key file.
 
-Copy the "ldap.properties.example" to "ldap.properties" and fill in the
+### config.properties
+
+A "config.proprties" file is used for specifying application configuration,
+including:
+
+* the LDAP connection information
+* the Google service account credentials file
+* the Google Sheets document to retrive
+
+A sample "config.properties.example" file has been included in this repository.
+
+Copy the "config.properties.example" to "config.properties" and fill in the
 appropriate values.
-
-### locations_map.yml
-
-A YAML file mapping cost centers to locations. This is used in generating
-the "Location" column in the Excel spreadsheet.
 
 ## Running the application
 
@@ -37,26 +47,24 @@ subdirectory, where \<VERSION> is the Maven version number.
 To run the application, use the following command:
 
 ```
-> java -jar target/staffdirectory-ldap-<VERSION>.jar --config <LDAP CONFIG FILE> --locations <LOCATION MAP FILE> --out <EXCEL OUTPUT FILE>
+> java -jar target/staffdirectory-ldap-<VERSION>.jar --config <CONFIG FILE> --out <EXCEL OUTPUT FILE>
 ```
 where:
  
 * \<VERSION> is the Maven version number
-* \<LDAP CONFIG FILE> is the path to the LDAP configuration properties file
-* \<LOCATION MAP FILE> is the path to the YAML file mapping cost center to location
+* \<CONFIG FILE> is the path to the configuration properties file
 * \<EXCEL OUTPUT FILE> the path location to create the Excel spreadsheet
  
 For example, using
  
 * \<VERSION> - "1.0.0-SNAPSHOT"
-* \<LDAP CONFIG FILE> - "ldap.properties"
-* \<LOCATION MAP FILE> - "locations_map.yml"
+* \<CONFIG FILE> - "config.properties"
 * \<EXCEL OUTPUT FILE> - "test.xlsx"
 
 the command would be:
 
 ```
-> java -jar target/staffdirectory-ldap-1.0.0-SNAPSHOT.jar --config ldap.properties --locations locations_map.yml --out test.xlsx
+> java -jar target/staffdirectory-ldap-1.0.0-SNAPSHOT.jar --config config.properties --out test.xlsx
 ```
 
 ## License

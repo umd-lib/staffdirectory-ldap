@@ -21,12 +21,13 @@
     <commons-cli.version>1.4</commons-cli.version>
     <log4j2.version>2.8.2</log4j2.version>
     <junit.version>4.12</junit.version>
-    <jackson.version>2.9.9</jackson.version>
     <maven-shade.version>2.3</maven-shade.version>
+    <google-api-client.version>1.30.4</google-api-client.version>
+    <google-sheets.version>v4-rev516-1.23.0</google-sheets.version>
 
     <!-- Checkstyle -->
     <!-- checkstyle.version corresponds to Eclipse Checkstyle plugin version -->
-    <checkstyle.version>8.12</checkstyle.version>
+    <checkstyle.version>8.18</checkstyle.version>
     <maven.checkstyle.version>3.0.0</maven.checkstyle.version>
     <maven.jxr.version>3.0.0</maven.jxr.version>
     <checkstyle.config.location>build-tools/checkstyle.xml</checkstyle.config.location>
@@ -47,6 +48,24 @@
     </dependency>
 
     <dependency>
+      <groupId>com.google.api-client</groupId>
+      <artifactId>google-api-client</artifactId>
+      <version>${google-api-client.version}</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>com.google.oauth-client</groupId>
+        <artifactId>google-oauth-client-jetty</artifactId>
+        <version>1.30.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.apis</groupId>
+      <artifactId>google-api-services-sheets</artifactId>
+      <version>${google-sheets.version}</version>
+    </dependency>
+    
+    <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
       <version>${poi.version}</version>
@@ -56,18 +75,6 @@
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
       <version>${poi.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-yaml</artifactId>
-      <version>${jackson.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
     </dependency>
 
     <dependency>

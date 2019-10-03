@@ -88,4 +88,14 @@ public interface Person {
    * @return the cost center associated with this person
    */
   public String getCostCenter();
+
+  /**
+   * @return the location associated with this person
+   */
+  public String getLocation();
+
+  /**
+   * @return the functional title associated with this person
+   */
+  public String getFunctionalTitle();
 }

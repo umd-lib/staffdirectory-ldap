@@ -3,5 +3,5 @@
 .settings/
 target/
 
-ldap.properties
+config.properties
 dependency-reduced-pom.xml
