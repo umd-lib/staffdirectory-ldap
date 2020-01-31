@@ -27,7 +27,7 @@
 
     <!-- Checkstyle -->
     <!-- checkstyle.version corresponds to Eclipse Checkstyle plugin version -->
-    <checkstyle.version>8.18</checkstyle.version>
+    <checkstyle.version>8.29</checkstyle.version>
     <maven.checkstyle.version>3.0.0</maven.checkstyle.version>
     <maven.jxr.version>3.0.0</maven.jxr.version>
     <checkstyle.config.location>build-tools/checkstyle.xml</checkstyle.config.location>
