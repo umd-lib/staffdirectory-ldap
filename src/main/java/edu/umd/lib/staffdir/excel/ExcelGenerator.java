@@ -92,29 +92,29 @@ public class ExcelGenerator {
       for (Person p : persons) {
         row = sheet.createRow(rowIndex);
 
-        String categoryStatus = p.getCategoryStatus();
+        String categoryStatus = p.categoryStatus;
 
-        String facultyPermStatus = p.isFacultyPermanentStatus() ? "P" : "";
-        String expr1 = String.format("%s %s <%s>", p.getFirstName(), p.getLastName(), p.getEmail());
+        String facultyPermStatus = p.isFacultyPermanentStatus ? "P" : "";
+        String expr1 = String.format("%s %s <%s>", p.firstName, p.lastName, p.email);
 
         String[] rowValues = {
-            p.getLastName(),
-            p.getFirstName(),
-            p.getPhoneNumber(),
-            p.getEmail(),
-            p.getOfficialTitle(),
-            p.getRoomNumber(),
-            p.getBuilding(),
-            p.getDivision(),
-            p.getDepartment(),
-            p.getUnit(),
-            p.getLocation(),
+            p.lastName,
+            p.firstName,
+            p.phoneNumber,
+            p.email,
+            p.officialTitle,
+            p.roomNumber,
+            p.building,
+            p.division,
+            p.department,
+            p.unit,
+            p.location,
             "fte_as_percentage",
             categoryStatus,
             facultyPermStatus,
-            p.getDescriptiveTitle(),
+            p.descriptiveTitle,
             expr1,
-            p.getCostCenter()
+            p.costCenter
         };
 
         for (int colIndex = 0; colIndex < rowValues.length; colIndex++) {
@@ -125,7 +125,7 @@ public class ExcelGenerator {
 
           // Special handling for FTE -- shown as a percentage
           if ("fte_as_percentage".equals(value)) {
-            String fte = (p.getFte() == null) ? "100" : p.getFte();
+            String fte = (p.fte == null) ? "100" : p.fte;
             double fteAsDouble = Double.parseDouble(fte);
             double fteAsPercent = fteAsDouble / 100.0;
             cell.setCellValue(fteAsPercent);

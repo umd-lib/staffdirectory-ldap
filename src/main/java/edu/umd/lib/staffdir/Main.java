@@ -103,53 +103,14 @@ public class Main {
 
     List<Person> persons = new ArrayList<>();
     for (String uid : uids) {
-      persons.add(createPerson(uid, staffMap, ldapResults, organizationsMap));
+      persons.add(Person.createPerson(uid, staffMap, ldapResults, organizationsMap));
     }
 
     // Sort the persons by last name
     Collections.sort(persons,
-        (Person p1, Person p2) -> p1.getLastName().toLowerCase().compareTo(p2.getLastName().toLowerCase()));
+        (Person p1, Person p2) -> p1.lastName.toLowerCase().compareTo(p2.lastName.toLowerCase()));
 
     ExcelGenerator.generate(outputFilename, persons, "abcd");
-  }
-
-  public static Person createPerson(String uid,
-      Map<String, Map<String, String>> staffMap,
-      Map<String, Map<String, String>> ldapResults,
-      Map<String, Map<String, String>> organizationsMap) {
-    Map<String, String> staffEntry = staffMap.get(uid);
-    Map<String, String> ldapResult = ldapResults.get(uid);
-    String costCenter = staffEntry.get("Cost Center");
-    Map<String, String> organization = organizationsMap.get(costCenter);
-
-    boolean facultyPermStatus = false;
-    String facultyPermStatusStr = staffEntry.get("Faculty Perm Status");
-    if ((facultyPermStatusStr != null) && ("p".equals(facultyPermStatusStr.toLowerCase()))) {
-      facultyPermStatus = true;
-    }
-
-    PersonBuilder pb = new PersonBuilder();
-    pb.uid(uid)
-        .lastName(ldapResult.get("sn"))
-        .firstName(ldapResult.get("givenName"))
-        .phoneNumber(ldapResult.get("telephoneNumber"))
-        .email(ldapResult.get("mail"))
-        .officialTitle(ldapResult.get("umOfficialTitle"))
-        .roomNumber(ldapResult.get("umPrimaryCampusRoom"))
-        .building(ldapResult.get("umPrimaryCampusBuilding"))
-        .division(organization.get("Division Code"))
-        .department(organization.get("Department"))
-        .unit(organization.get("Unit"))
-        .fte(staffEntry.get("Appt Fte"))
-        .categoryStatus(ldapResult.get("umCatStatus"))
-        .costCenter(costCenter)
-        .facultyPermanentStatus(facultyPermStatus)
-        .descriptiveTitle(ldapResult.get("umDisplayTitle"))
-        .location(organization.get("Location"))
-        .functionalTitle(staffEntry.get("Functional Title"));
-
-    return pb.getPerson();
-
   }
 
   public static Map<String, Map<String, String>> createStaffMap(List<Map<String, String>> rawStaffMap,
