@@ -31,6 +31,20 @@ import edu.umd.lib.staffdir.Person;
 public class ExcelGenerator {
   public static final Logger log = LoggerFactory.getLogger(ExcelGenerator.class);
 
+  private List<Map<String, String>> fieldMappings;
+  private Map<String, String> categoryStatusMap;
+
+  public ExcelGenerator(
+      List<Map<String, String>> fieldMappings,
+      List<Map<String, String>> categoryStatusAbbreviations) {
+    this.fieldMappings = fieldMappings;
+
+    categoryStatusMap = new HashMap<>();
+    for (Map<String, String> categoryStatus : categoryStatusAbbreviations) {
+      categoryStatusMap.put(categoryStatus.get("Abbreviation"), categoryStatus.get("Full Text"));
+    }
+  }
+
   /**
    * Generates an Excel spreadsheet from the provided information
    *
@@ -41,8 +55,7 @@ public class ExcelGenerator {
    * @param password
    *          the password to set on the Excel spreadsheet to protect it.
    */
-  public static void generate(String filename, List<Map<String, String>> fieldMappings,
-      List<Person> persons, String password) {
+  public void generate(String filename, List<Person> persons, String password) {
     try (Workbook wb = new XSSFWorkbook()) {
 
       Sheet sheet = wb.createSheet("All Staff List");
@@ -50,19 +63,17 @@ public class ExcelGenerator {
       int rowIndex = 0;
 
       // Header row
-      String[] columnTitles = {
-          "LastName", "FirstName", "PhoneNumber", "E-mail", "Title", "RoomNo",
-          "Bldg", "Division", "Department", "Unit", "Location", "Appt Fte",
-          "Category Status", "Faculty Perm Status", "Descriptive Title",
-          "Expr1", "CostCenter"
-      };
+      String[] columnTitles = new String[fieldMappings.size()];
+      for (int i = 0; i < fieldMappings.size(); i++) {
+        columnTitles[i] = fieldMappings.get(i).get("Destination Field");
+      }
 
       // Map columns in destination spreadsheet to fields in the field mappings
-      Map<String, Map<String, String>> columnsToFields = new HashMap<>();
+      Map<String, Map<String, String>> columnTitlesToSourceFields = new HashMap<>();
       for (String columnTitle : columnTitles) {
         for (Map<String, String> fieldMapping : fieldMappings) {
-          if (columnTitle.equals(fieldMapping.get("Spreadsheet Column"))) {
-            columnsToFields.put(columnTitle, fieldMapping);
+          if (columnTitle.equals(fieldMapping.get("Destination Field"))) {
+            columnTitlesToSourceFields.put(columnTitle, fieldMapping);
           }
         }
       }
@@ -100,13 +111,14 @@ public class ExcelGenerator {
         Map<String, String> rowValues = new HashMap<>();
 
         for (String columnTitle : columnTitles) {
-          Map<String, String> fieldMapping = columnsToFields.get(columnTitle);
+          Map<String, String> fieldMapping = columnTitlesToSourceFields.get(columnTitle);
           if (fieldMapping != null) {
             String source = fieldMapping.get("Source");
             String sourceField = fieldMapping.get("Source Field");
             String value = p.getAllowNull(source, sourceField);
             if (value != null) {
-              rowValues.put(columnTitle, value);
+              String displayValue = getDisplayValue(fieldMapping.get("Display Type"), value);
+              rowValues.put(columnTitle, displayValue);
             }
           }
         }
@@ -126,12 +138,14 @@ public class ExcelGenerator {
           Cell cell = row.createCell(colIndex);
           cell.setCellValue(value);
 
-          // Special handling for FTE -- shown as a percentage
-          if ("Appt Fte".equals(columnTitle)) {
-            String fte = (rowValues.get(columnTitle) == null) ? "100" : rowValues.get(columnTitle);
-            double fteAsDouble = Double.parseDouble(fte);
-            double fteAsPercent = fteAsDouble / 100.0;
-            cell.setCellValue(fteAsPercent);
+          Map<String, String> fieldMapping = columnTitlesToSourceFields.get(columnTitle);
+
+          // Special handling for "Percentage" display types
+          if ("Percentage".equals(fieldMapping.get("Display Type"))) {
+            String percentageValue = (rowValues.get(columnTitle) == null) ? "100" : rowValues.get(columnTitle);
+            double percentageValueAsDouble = Double.parseDouble(percentageValue);
+            double valueAsPercent = percentageValueAsDouble / 100.0;
+            cell.setCellValue(valueAsPercent);
             cell.setCellStyle(percentageStyle);
           }
         }
@@ -161,8 +175,17 @@ public class ExcelGenerator {
       } catch (IOException ioe) {
         log.error("I/O error writing out spreadsheet", ioe);
       }
-    } catch (IOException ioe) {
+    } catch (
+
+    IOException ioe) {
       log.error("I/O error closing workbook", ioe);
     }
+  }
+
+  public String getDisplayValue(String displayType, String value) {
+    if ("CategoryStatus".equals(displayType)) {
+      return categoryStatusMap.getOrDefault(value, value);
+    }
+    return value;
   }
 }
