@@ -6,26 +6,42 @@ import java.util.Map;
  * Encapsulates information for a single person.
  */
 public class Person {
-  public String uid;
-  public String lastName;
-  public String firstName;
-  public String phoneNumber;
-  public String email;
-  public String officialTitle;
-  public String roomNumber;
-  public String building;
-  public String division;
-  public String department;
-  public String unit;
-  public String fte;
-  public String categoryStatus;
-  public boolean isFacultyPermanentStatus;
-  public String descriptiveTitle;
-  public String costCenter;
-  public String location;
-  public String functionalTitle;
+  public final String uid;
+  public final String lastName;
+  public final String firstName;
+  public final String phoneNumber;
+  public final String email;
+  public final String officialTitle;
+  public final String roomNumber;
+  public final String building;
+  public final String division;
+  public final String department;
+  public final String unit;
+  public final String fte;
+  public final String categoryStatus;
+  public final boolean isFacultyPermanentStatus;
+  public final String descriptiveTitle;
+  public final String costCenter;
+  public final String location;
+  public final String functionalTitle;
 
-  public static Person createPerson(String uid,
+  /**
+   * Constructs a new Person from the given parameters
+   *
+   * @param uid
+   *          the unique identifier for the person, typically the directory id
+   * @param staffMap
+   *          a Map<String, Map<String, String>> of entries from the "Staff"
+   *          sheet of the "Online Staff Directory Mapping" Google Sheets
+   *          document
+   * @param ldapResults
+   *          a Map<String, Map<String, String>> of the LDAP search results
+   * @param organizationsMap
+   *          a Map<String, Map<String, String>> derived from the
+   *          "Organizations" sheet of the "Online Staff Directory Mapping"
+   *          Google Sheets document
+   */
+  public Person(String uid,
       Map<String, Map<String, String>> staffMap,
       Map<String, Map<String, String>> ldapResults,
       Map<String, Map<String, String>> organizationsMap) {
@@ -40,27 +56,24 @@ public class Person {
       facultyPermStatus = true;
     }
 
-    Person person = new Person();
-    person.uid = uid;
-    person.lastName = ldapResult.get("sn");
-    person.firstName = ldapResult.get("givenName");
-    person.phoneNumber = ldapResult.get("telephoneNumber");
-    person.email = ldapResult.get("mail");
-    person.officialTitle = ldapResult.get("umOfficialTitle");
-    person.roomNumber = ldapResult.get("umPrimaryCampusRoom");
-    person.building = ldapResult.get("umPrimaryCampusBuilding");
-    person.division = organization.get("Division Code");
-    person.department = organization.get("Department");
-    person.unit = organization.get("Unit");
-    person.fte = staffEntry.get("Appt Fte");
-    person.categoryStatus = ldapResult.get("umCatStatus");
-    person.costCenter = costCenter;
-    person.isFacultyPermanentStatus = facultyPermStatus;
-    person.descriptiveTitle = ldapResult.get("umDisplayTitle");
-    person.location = organization.get("Location");
-    person.functionalTitle = staffEntry.get("Functional Title");
-
-    return person;
+    this.uid = uid;
+    this.lastName = ldapResult.get("sn");
+    this.firstName = ldapResult.get("givenName");
+    this.phoneNumber = ldapResult.get("telephoneNumber");
+    this.email = ldapResult.get("mail");
+    this.officialTitle = ldapResult.get("umOfficialTitle");
+    this.roomNumber = ldapResult.get("umPrimaryCampusRoom");
+    this.building = ldapResult.get("umPrimaryCampusBuilding");
+    this.division = organization.get("Division Code");
+    this.department = organization.get("Department");
+    this.unit = organization.get("Unit");
+    this.fte = staffEntry.get("Appt Fte");
+    this.categoryStatus = ldapResult.get("umCatStatus");
+    this.costCenter = costCenter;
+    this.isFacultyPermanentStatus = facultyPermStatus;
+    this.descriptiveTitle = ldapResult.get("umDisplayTitle");
+    this.location = organization.get("Location");
+    this.functionalTitle = staffEntry.get("Functional Title");
   }
 
   @Override
