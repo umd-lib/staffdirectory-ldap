@@ -80,6 +80,7 @@ public class Main {
     String spreadsheetDocId = props.getProperty("spreadsheetDocId");
     SheetsRetriever sr = new SheetsRetriever(appName, serviceAccountCredentialsFile);
 
+    List<Map<String, String>> fieldMappings = sr.toMap(spreadsheetDocId, "Field Mappings");
     List<Map<String, String>> rawOrganizationsList = sr.toMap(spreadsheetDocId, "Organization");
     List<Map<String, String>> rawStaffMap = sr.toMap(spreadsheetDocId, "Staff");
 
@@ -107,8 +108,13 @@ public class Main {
       Map<String, String> ldapEntry = ldapResults.get(uid);
       String costCenter = staffEntry.get("Cost Center");
       Map<String, String> organization = organizationsMap.get(costCenter);
+      Map<String, Map<String, String>> sources = new HashMap<>();
+      sources.put("Staff", staffEntry);
+      sources.put("Organization", organization);
+      sources.put("LDAP", ldapEntry);
+
       if (ldapEntry != null) {
-        persons.add(new Person(uid, staffEntry, ldapEntry, organization));
+        persons.add(new Person(uid, sources));
       } else {
         // TODO figure out how to handle errors
         System.err.println("---Skipping " + uid + ". Could not find in LDAP!");
@@ -117,9 +123,9 @@ public class Main {
 
     // Sort the persons by last name
     Collections.sort(persons,
-        (Person p1, Person p2) -> p1.lastName.toLowerCase().compareTo(p2.lastName.toLowerCase()));
+        (Person p1, Person p2) -> p1.get("LDAP", "sn").toLowerCase().compareTo(p2.get("LDAP", "sn").toLowerCase()));
 
-    ExcelGenerator.generate(outputFilename, persons, "abcd");
+    ExcelGenerator.generate(outputFilename, fieldMappings, persons, "abcd");
   }
 
   public static Map<String, Map<String, String>> createStaffMap(List<Map<String, String>> rawStaffMap,
