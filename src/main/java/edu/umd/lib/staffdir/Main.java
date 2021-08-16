@@ -103,7 +103,7 @@ public class Main {
 
     List<Person> persons = new ArrayList<>();
     for (String uid : uids) {
-      persons.add(Person.createPerson(uid, staffMap, ldapResults, organizationsMap));
+      persons.add(new Person(uid, staffMap, ldapResults, organizationsMap));
     }
 
     // Sort the persons by last name
