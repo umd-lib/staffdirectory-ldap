@@ -25,7 +25,7 @@ including:
 
 * the LDAP connection information
 * the Google service account credentials file
-* the Google Sheets document to retrive
+* the Google Sheets document to retrieve
 
 A sample "config.properties.example" file has been included in this repository.
 
@@ -66,6 +66,11 @@ the command would be:
 ```
 > java -jar target/staffdirectory-ldap-1.0.0-SNAPSHOT.jar --config config.properties --out test.xlsx
 ```
+
+## Document Mappings
+
+See <docs/StaffDirectoryMapping.md> for the mapping of Google Sheets and LDAP
+source fields into fields on the "Person" object.
 
 ## License
 
