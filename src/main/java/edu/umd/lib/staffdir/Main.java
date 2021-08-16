@@ -103,7 +103,16 @@ public class Main {
 
     List<Person> persons = new ArrayList<>();
     for (String uid : uids) {
-      persons.add(new Person(uid, staffMap, ldapResults, organizationsMap));
+      Map<String, String> staffEntry = staffMap.get(uid);
+      Map<String, String> ldapEntry = ldapResults.get(uid);
+      String costCenter = staffEntry.get("Cost Center");
+      Map<String, String> organization = organizationsMap.get(costCenter);
+      if (ldapEntry != null) {
+        persons.add(new Person(uid, staffEntry, ldapEntry, organization));
+      } else {
+        // TODO figure out how to handle errors
+        System.err.println("---Skipping " + uid + ". Could not find in LDAP!");
+      }
     }
 
     // Sort the persons by last name

@@ -31,25 +31,20 @@ public class Person {
    * @param uid
    *          the unique identifier for the person, typically the directory id
    * @param staffMap
-   *          a Map<String, Map<String, String>> of entries from the "Staff"
-   *          sheet of the "Online Staff Directory Mapping" Google Sheets
-   *          document
+   *          a Map<String, String> containing the fields from the "Staff" sheet
+   *          of the "Online Staff Directory Mapping" Google Sheets document for
+   *          the given uid
    * @param ldapResults
-   *          a Map<String, Map<String, String>> of the LDAP search results
+   *          a Map<String, String> of the LDAP search result for the given uid
    * @param organizationsMap
-   *          a Map<String, Map<String, String>> derived from the
-   *          "Organizations" sheet of the "Online Staff Directory Mapping"
-   *          Google Sheets document
+   *          a Map<String, String> of the organization for the associated uid
+   *          derived from the "Organizations" sheet of the "Online Staff
+   *          Directory Mapping" Google Sheets document
    */
   public Person(String uid,
-      Map<String, Map<String, String>> staffMap,
-      Map<String, Map<String, String>> ldapResults,
-      Map<String, Map<String, String>> organizationsMap) {
-    Map<String, String> staffEntry = staffMap.get(uid);
-    Map<String, String> ldapResult = ldapResults.get(uid);
-    String costCenter = staffEntry.get("Cost Center");
-    Map<String, String> organization = organizationsMap.get(costCenter);
-
+      Map<String, String> staffEntry,
+      Map<String, String> ldapResult,
+      Map<String, String> organization) {
     boolean facultyPermStatus = false;
     String facultyPermStatusStr = staffEntry.get("Faculty Perm Status");
     if ((facultyPermStatusStr != null) && ("p".equals(facultyPermStatusStr.toLowerCase()))) {
@@ -69,7 +64,7 @@ public class Person {
     this.unit = organization.get("Unit");
     this.fte = staffEntry.get("Appt Fte");
     this.categoryStatus = ldapResult.get("umCatStatus");
-    this.costCenter = costCenter;
+    this.costCenter = staffEntry.get("Cost Center");
     this.isFacultyPermanentStatus = facultyPermStatus;
     this.descriptiveTitle = ldapResult.get("umDisplayTitle");
     this.location = organization.get("Location");
