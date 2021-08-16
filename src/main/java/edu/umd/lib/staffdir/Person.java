@@ -35,11 +35,6 @@ public interface Person {
   public String getOfficialTitle();
 
   /**
-   * @return the job title for this person.
-   */
-  public String getJobTitle();
-
-  /**
    * @return the room number associated with this person.
    */
   public String getRoomNumber();

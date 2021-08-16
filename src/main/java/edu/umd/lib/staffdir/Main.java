@@ -135,7 +135,6 @@ public class Main {
         .phoneNumber(ldapResult.get("telephoneNumber"))
         .email(ldapResult.get("mail"))
         .officialTitle(ldapResult.get("umOfficialTitle"))
-        .jobTitle(ldapResult.get("umDisplayTitle"))
         .roomNumber(ldapResult.get("umPrimaryCampusRoom"))
         .building(ldapResult.get("umPrimaryCampusBuilding"))
         .division(organization.get("Division Code"))
@@ -145,7 +144,7 @@ public class Main {
         .categoryStatus(ldapResult.get("umCatStatus"))
         .costCenter(costCenter)
         .facultyPermanentStatus(facultyPermStatus)
-        .descriptiveTitle(ldapResult.get("umOptionalTitle"))
+        .descriptiveTitle(ldapResult.get("umDisplayTitle"))
         .location(organization.get("Location"))
         .functionalTitle(staffEntry.get("Functional Title"));
 

@@ -36,11 +36,6 @@ public class PersonBuilder {
     return this;
   }
 
-  public PersonBuilder jobTitle(String jobTitle) {
-    person.setJobTitle(jobTitle);
-    return this;
-  }
-
   public PersonBuilder roomNumber(String roomNumber) {
     person.setRoomNumber(roomNumber);
     return this;
@@ -116,7 +111,6 @@ class PersonImpl implements Person {
   private String phoneNumber;
   private String email;
   private String officialTitle;
-  private String jobTitle;
   private String roomNumber;
   private String building;
   private String division;
@@ -182,15 +176,6 @@ class PersonImpl implements Person {
 
   public void setOfficialTitle(String officialTitle) {
     this.officialTitle = officialTitle;
-  }
-
-  @Override
-  public String getJobTitle() {
-    return jobTitle;
-  }
-
-  public void setJobTitle(String jobTitle) {
-    this.jobTitle = jobTitle;
   }
 
   @Override
