@@ -7,23 +7,7 @@ import java.util.Map;
  */
 public class Person {
   public final String uid;
-  public final String lastName;
-  public final String firstName;
-  public final String phoneNumber;
-  public final String email;
-  public final String officialTitle;
-  public final String roomNumber;
-  public final String building;
-  public final String division;
-  public final String department;
-  public final String unit;
-  public final String fte;
-  public final String categoryStatus;
-  public final boolean isFacultyPermanentStatus;
-  public final String descriptiveTitle;
-  public final String costCenter;
-  public final String location;
-  public final String functionalTitle;
+  private Map<String, Map<String, String>> sources;
 
   /**
    * Constructs a new Person from the given parameters
@@ -42,40 +26,36 @@ public class Person {
    *          Directory Mapping" Google Sheets document
    */
   public Person(String uid,
-      Map<String, String> staffEntry,
-      Map<String, String> ldapResult,
-      Map<String, String> organization) {
-    boolean facultyPermStatus = false;
-    String facultyPermStatusStr = staffEntry.get("Faculty Perm Status");
-    if ((facultyPermStatusStr != null) && ("p".equals(facultyPermStatusStr.toLowerCase()))) {
-      facultyPermStatus = true;
+      Map<String, Map<String, String>> sources) {
+    this.uid = uid;
+    this.sources = sources;
+  }
+
+  public String get(String source, String field) {
+    Map<String, String> src = sources.get(source);
+    if (src == null) {
+      // TODO: Emit warning the source is null
+      return "";
     }
 
-    this.uid = uid;
-    this.lastName = ldapResult.get("sn");
-    this.firstName = ldapResult.get("givenName");
-    this.phoneNumber = ldapResult.get("telephoneNumber");
-    this.email = ldapResult.get("mail");
-    this.officialTitle = ldapResult.get("umOfficialTitle");
-    this.roomNumber = ldapResult.get("umPrimaryCampusRoom");
-    this.building = ldapResult.get("umPrimaryCampusBuilding");
-    this.division = organization.get("Division Code");
-    this.department = organization.get("Department");
-    this.unit = organization.get("Unit");
-    this.fte = staffEntry.get("Appt Fte");
-    this.categoryStatus = ldapResult.get("umCatStatus");
-    this.costCenter = staffEntry.get("Cost Center");
-    this.isFacultyPermanentStatus = facultyPermStatus;
-    this.descriptiveTitle = ldapResult.get("umDisplayTitle");
-    this.location = organization.get("Location");
-    this.functionalTitle = staffEntry.get("Functional Title");
+    return src.getOrDefault(field, "");
+  }
+
+  public String getAllowNull(String source, String field) {
+    Map<String, String> src = sources.get(source);
+    if (src == null) {
+      // TODO: Emit warning the source is null
+      return null;
+    }
+
+    return src.getOrDefault(field, null);
   }
 
   @Override
   public String toString() {
-    String str = String.format("Person@%s[uid: %s - %s, %s]]ß",
+    String str = String.format("Person@%s[uid: %s]ß",
         Integer.toHexString(System.identityHashCode(this)),
-        uid, lastName, firstName);
+        uid);
     return str;
   }
 }

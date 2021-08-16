@@ -3,8 +3,9 @@ package edu.umd.lib.staffdir.excel;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -40,7 +41,8 @@ public class ExcelGenerator {
    * @param password
    *          the password to set on the Excel spreadsheet to protect it.
    */
-  public static void generate(String filename, List<Person> persons, String password) {
+  public static void generate(String filename, List<Map<String, String>> fieldMappings,
+      List<Person> persons, String password) {
     try (Workbook wb = new XSSFWorkbook()) {
 
       Sheet sheet = wb.createSheet("All Staff List");
@@ -55,12 +57,15 @@ public class ExcelGenerator {
           "Expr1", "CostCenter"
       };
 
-      // Get column index of "Appy Fte" column, as it needs to be formatted
-      // as a percentage.
-      int fteColIndex = IntStream.range(0, columnTitles.length)
-          .filter(i -> "Appy Fte".equals(columnTitles[i]))
-          .findFirst() // first occurrence
-          .orElse(-1);
+      // Map columns in destination spreadsheet to fields in the field mappings
+      Map<String, Map<String, String>> columnsToFields = new HashMap<>();
+      for (String columnTitle : columnTitles) {
+        for (Map<String, String> fieldMapping : fieldMappings) {
+          if (columnTitle.equals(fieldMapping.get("Spreadsheet Column"))) {
+            columnsToFields.put(columnTitle, fieldMapping);
+          }
+        }
+      }
 
       // Gray background
       CellStyle style = wb.createCellStyle();
@@ -92,40 +97,38 @@ public class ExcelGenerator {
       for (Person p : persons) {
         row = sheet.createRow(rowIndex);
 
-        String categoryStatus = p.categoryStatus;
+        Map<String, String> rowValues = new HashMap<>();
 
-        String facultyPermStatus = p.isFacultyPermanentStatus ? "P" : "";
-        String expr1 = String.format("%s %s <%s>", p.firstName, p.lastName, p.email);
+        for (String columnTitle : columnTitles) {
+          Map<String, String> fieldMapping = columnsToFields.get(columnTitle);
+          if (fieldMapping != null) {
+            String source = fieldMapping.get("Source");
+            String sourceField = fieldMapping.get("Source Field");
+            String value = p.getAllowNull(source, sourceField);
+            if (value != null) {
+              rowValues.put(columnTitle, value);
+            }
+          }
+        }
 
-        String[] rowValues = {
-            p.lastName,
-            p.firstName,
-            p.phoneNumber,
-            p.email,
-            p.officialTitle,
-            p.roomNumber,
-            p.building,
-            p.division,
-            p.department,
-            p.unit,
-            p.location,
-            "fte_as_percentage",
-            categoryStatus,
-            facultyPermStatus,
-            p.descriptiveTitle,
-            expr1,
-            p.costCenter
-        };
+        // Derived Values
+        String expr1 = String.format("%s %s <%s>",
+            p.get("LDAP", "givenName"),
+            p.get("LDAP", "sn"),
+            p.get("LDAP", "mail"));
 
-        for (int colIndex = 0; colIndex < rowValues.length; colIndex++) {
-          String value = rowValues[colIndex];
+        rowValues.put("Expr1", expr1);
+
+        for (int colIndex = 0; colIndex < columnTitles.length; colIndex++) {
+          String columnTitle = columnTitles[colIndex];
+          String value = rowValues.get(columnTitle);
 
           Cell cell = row.createCell(colIndex);
           cell.setCellValue(value);
 
           // Special handling for FTE -- shown as a percentage
-          if ("fte_as_percentage".equals(value)) {
-            String fte = (p.fte == null) ? "100" : p.fte;
+          if ("Appt Fte".equals(columnTitle)) {
+            String fte = (rowValues.get(columnTitle) == null) ? "100" : rowValues.get(columnTitle);
             double fteAsDouble = Double.parseDouble(fte);
             double fteAsPercent = fteAsDouble / 100.0;
             cell.setCellValue(fteAsPercent);
