@@ -33,46 +33,12 @@ public class Main {
   public static final Logger log = LoggerFactory.getLogger(Main.class);
 
   public static void main(String[] args) {
-    Options options = getOptions();
-    CommandLineParser cmdLineParser = new DefaultParser();
-
-    CommandLine cmdLine = null;
-    try {
-      cmdLine = cmdLineParser.parse(options, args);
-    } catch (ParseException pe) {
-      printHelp(options);
-      System.exit(1);
-    }
-
-    if (cmdLine == null) {
-      printHelp(options);
-      System.exit(1);
-    }
-
-    if (cmdLine.hasOption("help")) {
-      printHelp(options);
-      System.exit(0);
-    }
+    CommandLine cmdLine = parseCommandLine(args);
 
     String propFilename = cmdLine.getOptionValue("config");
     String outputFilename = cmdLine.getOptionValue("output");
 
-    File propFile = new File(propFilename);
-
-    if (!propFile.exists()) {
-      System.err.println("ERROR: Properties file '" + propFilename + "' cannot be found or accessed.");
-      System.exit(1);
-    }
-
-    Properties props = null;
-    try {
-      FileInputStream propFileIn = new FileInputStream(propFile);
-      props = new Properties(System.getProperties());
-      props.load(propFileIn);
-    } catch (IOException ioe) {
-      System.out.println(ioe);
-      System.exit(1);
-    }
+    Properties props = getProperties(propFilename);
 
     // Google configuration Settings
     String appName = props.getProperty("appName");
@@ -115,8 +81,7 @@ public class Main {
       if (ldapEntry != null) {
         persons.add(new Person(uid, sources));
       } else {
-        // TODO figure out how to handle errors
-        System.err.println("---Skipping " + uid + ". Could not find in LDAP!");
+        log.warn("WARNING: Could not find '" + uid + "' in LDAP. Skipping.");
       }
     }
 
@@ -139,6 +104,71 @@ public class Main {
       results.put(uid, entry);
     }
     return results;
+  }
+
+  /**
+   * Returns a Properties object derived from the specified file.
+   *
+   * Note: This method will terminate the application if the given file cannot
+   * be parsed, or if the file is not found.
+   *
+   * @param propFilename
+   *          the name of the file containing the properties
+   * @return a Properties object derived from the specified file.
+   */
+  public static Properties getProperties(String propFilename) {
+    File propFile = new File(propFilename);
+
+    if (!propFile.exists()) {
+      log.error("ERROR: Properties file '" + propFilename + "' cannot be found or accessed.");
+      System.exit(1);
+    }
+
+    Properties props = null;
+    try {
+      FileInputStream propFileIn = new FileInputStream(propFile);
+      props = new Properties(System.getProperties());
+      props.load(propFileIn);
+    } catch (IOException ioe) {
+      log.error("ERROR: Reading properties file '" + propFilename + "'", ioe);
+      System.exit(1);
+    }
+    return props;
+  }
+
+  /**
+   * Returns a CommandLine object parsed from the given arguments
+   *
+   * Note: This method will terminate the application if the given arguments
+   * cannot be parsed, or if the "--help" option is invoked.
+   *
+   * @param args
+   *          the arguments passed to the "main" method
+   * @return a CommandLine object containing the parsed arguments
+   */
+  public static CommandLine parseCommandLine(String[] args) {
+    Options options = getOptions();
+    CommandLineParser cmdLineParser = new DefaultParser();
+
+    CommandLine cmdLine = null;
+    try {
+      cmdLine = cmdLineParser.parse(options, args);
+    } catch (ParseException pe) {
+      printHelp(options);
+      System.exit(1);
+    }
+
+    if (cmdLine == null) {
+      printHelp(options);
+      System.exit(1);
+    }
+
+    if (cmdLine.hasOption("help")) {
+      printHelp(options);
+      System.exit(0);
+    }
+
+    return cmdLine;
   }
 
   /**
