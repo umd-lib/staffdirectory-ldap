@@ -166,7 +166,7 @@ public class Ldap {
       // Close the context when we're done
       ctx.close();
     } catch (NamingException e) {
-      log.error("Lookup failed.", e);
+      log.error("ERROR: Lookup failed.", e);
     }
     return searchResults;
   }
@@ -197,7 +197,7 @@ public class Ldap {
       }
 
     } catch (NamingException ne) {
-      log.error("Error processing LDAP parameters", ne);
+      log.error("ERROR: Error processing LDAP parameters", ne);
       return result;
     }
 

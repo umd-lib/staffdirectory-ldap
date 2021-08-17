@@ -173,12 +173,12 @@ public class ExcelGenerator {
       try (OutputStream fileOut = new FileOutputStream(filename)) {
         wb.write(fileOut);
       } catch (IOException ioe) {
-        log.error("I/O error writing out spreadsheet", ioe);
+        log.error("ERROR: I/O error writing out spreadsheet", ioe);
       }
     } catch (
 
     IOException ioe) {
-      log.error("I/O error closing workbook", ioe);
+      log.error("ERROR: I/O error closing workbook", ioe);
     }
   }
 
