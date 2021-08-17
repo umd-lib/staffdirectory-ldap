@@ -38,7 +38,19 @@ public class Person {
       return "";
     }
 
-    return src.getOrDefault(field, "");
+    if (src.containsKey(field)) {
+      String value = src.get(field);
+      if (value == null) {
+        // TODO: Emit warning that value is null
+        return "";
+      }
+      return value;
+
+    } else {
+      // TODO: Emit warning that key not found
+      return "";
+    }
+
   }
 
   public String getAllowNull(String source, String field) {
