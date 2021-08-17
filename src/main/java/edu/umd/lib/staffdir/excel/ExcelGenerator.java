@@ -115,6 +115,11 @@ public class ExcelGenerator {
           if (fieldMapping != null) {
             String source = fieldMapping.get("Source");
             String sourceField = fieldMapping.get("Source Field");
+
+            // Skip "Derived" source fields
+            if ("Derived".equals(source)) {
+              continue;
+            }
             String value = p.getAllowNull(source, sourceField);
             if (value != null) {
               String displayValue = getDisplayValue(fieldMapping.get("Display Type"), value);
