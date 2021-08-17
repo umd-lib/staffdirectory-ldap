@@ -81,7 +81,7 @@ public class Main {
       if (ldapEntry != null) {
         persons.add(new Person(uid, sources));
       } else {
-        log.warn("WARNING: Could not find '" + uid + "' in LDAP. Skipping.");
+        log.warn("WARNING: Could not find '{}' in LDAP. Skipping.", uid);
       }
     }
 
@@ -120,7 +120,7 @@ public class Main {
     File propFile = new File(propFilename);
 
     if (!propFile.exists()) {
-      log.error("ERROR: Properties file '" + propFilename + "' cannot be found or accessed.");
+      log.error("ERROR: Properties file '{}' cannot be found or accessed.", propFilename);
       System.exit(1);
     }
 
@@ -130,7 +130,7 @@ public class Main {
       props = new Properties(System.getProperties());
       props.load(propFileIn);
     } catch (IOException ioe) {
-      log.error("ERROR: Reading properties file '" + propFilename + "'", ioe);
+      log.error("ERROR: Reading properties file '{}'", propFilename, ioe);
       System.exit(1);
     }
     return props;
