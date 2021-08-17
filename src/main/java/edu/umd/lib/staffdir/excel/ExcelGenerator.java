@@ -175,6 +175,9 @@ public class ExcelGenerator {
         ((XSSFSheet) sheet).addIgnoredErrors(allCells, IgnoredErrorType.NUMBER_STORED_AS_TEXT);
       }
 
+      // Turn on Autofiltering in each of the column headers
+      sheet.setAutoFilter(new CellRangeAddress(0, 0, 0, numColumns - 1));
+
       try (OutputStream fileOut = new FileOutputStream(filename)) {
         wb.write(fileOut);
       } catch (IOException ioe) {
