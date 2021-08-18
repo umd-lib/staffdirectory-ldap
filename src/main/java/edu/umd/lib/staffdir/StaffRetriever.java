@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,11 +85,35 @@ public class StaffRetriever {
       }
     }
 
-    // Sort the persons by last name
-    Collections.sort(persons,
-        (Person p1, Person p2) -> p1.get("LDAP", "sn").toLowerCase().compareTo(p2.get("LDAP", "sn").toLowerCase()));
+    // Sort the persons by last name and first name
+    Collections.sort(persons, new PersonSorter());
 
     JsonUtils.writeToJson(persons, outputFilename);
+  }
+
+  /**
+   * Sorts Person objects by Last Name and First Name, based on LDAP attributes
+   */
+  static class PersonSorter implements Comparator<Person> {
+    @Override
+    public int compare(Person person1, Person person2) {
+      if (person1 == person2) {
+        return 0;
+      }
+
+      if (person1 == null) {
+        return -1;
+      }
+
+      if (person2 == null) {
+        return 1;
+      }
+
+      String person1SortKey = (person1.get("LDAP", "sn") + person1.get("LDAP", "givenName")).toLowerCase();
+      String person2SortKey = (person2.get("LDAP", "sn") + person2.get("LDAP", "givenName")).toLowerCase();
+
+      return person1SortKey.compareTo(person2SortKey);
+    }
   }
 
   public static Map<String, Map<String, String>> createStaffMap(List<Map<String, String>> rawStaffMap,
