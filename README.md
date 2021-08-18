@@ -34,43 +34,98 @@ appropriate values.
 
 ## Running the application
 
-The application is configured to use Maven to create a single executable
-jar that contains all the dependencies. To create the jar, simply run:
+This application uses the Maven "Application Assembler" plugin
+<https://www.mojohaus.org/appassembler/appassembler-maven-plugin/>
+to create executable scripts for running different commands.
+
+To build the apllication, run:
 
 ```
-> mvn package
+> mvn clean package appassembler:assemble
 ```
 
-This will create a "staffdirectory-ldap-\<VERSION>.jar" in the target/
-subdirectory, where \<VERSION> is the Maven version number.
+This will create a "target/appassembler" directory containing the application
+components.
 
-To run the application, use the following command:
+## Application Scripts
+
+The following application scripts are available:
+
+* staff-retriever
+* all-staff-list-builder
+
+### staff-retriever
+
+Retrieves the "Online Staff Directory Mapping" Google Sheets document from
+Google Drive, and creates a JSON file consisting of staff directory information
+obtained from LDAP, and the Google Sheets document.
+
+This script uses the following sheets in the Google Drive document:
+
+* Staff
+* Organization
+
+To run the script (from the project base directory):
 
 ```
-> java -jar target/staffdirectory-ldap-<VERSION>.jar --config <CONFIG FILE> --out <EXCEL OUTPUT FILE>
+> target/appassembler/bin/staff-retriever --config <CONFIG FILE> --output <JSON OUTPUT FILE>
 ```
+
 where:
  
-* \<VERSION> is the Maven version number
 * \<CONFIG FILE> is the path to the configuration properties file
-* \<EXCEL OUTPUT FILE> the path location to create the Excel spreadsheet
- 
+* \<JSON OUTPUT FILE> the path location to create the JSON output
+
 For example, using
  
-* \<VERSION> - "1.0.0-SNAPSHOT"
 * \<CONFIG FILE> - "config.properties"
-* \<EXCEL OUTPUT FILE> - "test.xlsx"
+* \<JSON OUTPUT FILE> - "staff.json"
 
 the command would be:
 
 ```
-> java -jar target/staffdirectory-ldap-1.0.0-SNAPSHOT.jar --config config.properties --out test.xlsx
+> target/appassembler/bin/staff-retriever --config config.properties --output staff.json
+```
+
+### all-staff-list-builder
+
+This script generates the "All Staff" spreadsheet from the JSON file created
+by the "staff-retriever" script.
+
+
+This script uses the following sheets in the Google Drive document:
+
+* All Staff List Mapping
+* CategoryStatus
+
+To run the script (from the project base directory):
+
+```
+> target/appassembler/bin/all-staff-list-builder --config <CONFIG FILE> --input <JSON INPUT FILE> --output <EXCEL OUTPUT FILE>
+```
+
+where:
+ 
+* \<CONFIG FILE> is the path to the configuration properties file
+* \<JSON INPUT FILE> the path location to the JSON file created by "staff-retriever"
+* \<EXCEL OUTPUT FILE> the path location to create the Excel spreadsheet
+
+For example, using
+ 
+* \<CONFIG FILE> - "config.properties"
+* \<JSON INPUT FILE> - "staff.json"
+* \<EXCEL OUTPUT FILE> - "All Staff List New.xlsx"
+
+the command would be:
+
+```
+> target/appassembler/bin/all-staff-list-builder --config config.properties --input staff.json --output "All Staff List New.xlsx"
 ```
 
 ## Document Mappings
 
-See <docs/StaffDirectoryMapping.md> for the mapping of Google Sheets and LDAP
-source fields into fields on the "Person" object.
+See <docs/OutputDocumentMapping.md> for information on using the Google Sheets
+document for specifying the display of fields in the output document.
 
 ## License
 
