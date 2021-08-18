@@ -21,7 +21,6 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.lib.staffdir.excel.ExcelGenerator;
 import edu.umd.lib.staffdir.google.Organizations;
 import edu.umd.lib.staffdir.google.SheetsRetriever;
 import edu.umd.lib.staffdir.ldap.Ldap;
@@ -29,8 +28,8 @@ import edu.umd.lib.staffdir.ldap.Ldap;
 /**
  * Application entrypoint for generating an Excel spreadsheet from LDAP
  */
-public class Main {
-  public static final Logger log = LoggerFactory.getLogger(Main.class);
+public class StaffRetriever {
+  public static final Logger log = LoggerFactory.getLogger(StaffRetriever.class);
 
   public static void main(String[] args) {
     CommandLine cmdLine = parseCommandLine(args);
@@ -89,11 +88,7 @@ public class Main {
     Collections.sort(persons,
         (Person p1, Person p2) -> p1.get("LDAP", "sn").toLowerCase().compareTo(p2.get("LDAP", "sn").toLowerCase()));
 
-    List<Map<String, String>> allStaffListMappings = sr.toMap(spreadsheetDocId, "All Staff List Mapping");
-    List<Map<String, String>> categoryStatusAbbreviations = sr.toMap(spreadsheetDocId, "CategoryStatus");
-    ExcelGenerator excelGenerator = new ExcelGenerator(allStaffListMappings, categoryStatusAbbreviations);
-    excelGenerator.generate(outputFilename, persons, "abcd");
-
+    JsonUtils.writeToJson(persons, outputFilename);
   }
 
   public static Map<String, Map<String, String>> createStaffMap(List<Map<String, String>> rawStaffMap,

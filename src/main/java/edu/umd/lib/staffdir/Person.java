@@ -5,6 +5,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Encapsulates information for a single person.
  */
@@ -19,7 +22,7 @@ public class Person {
   /**
    * The Map of sources for this person.
    */
-  private Map<String, Map<String, String>> sources;
+  public Map<String, Map<String, String>> sources;
 
   /**
    * Constructs a Person object with the given UID and Map of sources. The
@@ -32,8 +35,9 @@ public class Person {
    *          a Map of Map<String, String>, keyed by a source identifier such as
    *          "Staff", or "LDAP".
    */
-  public Person(String uid,
-      Map<String, Map<String, String>> sources) {
+  @JsonCreator
+  public Person(@JsonProperty("uid") String uid,
+      @JsonProperty("sources") Map<String, Map<String, String>> sources) {
     if (uid == null) {
       throw new IllegalArgumentException("uid is null.");
     }

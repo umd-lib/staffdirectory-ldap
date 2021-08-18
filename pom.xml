@@ -19,11 +19,10 @@
     <slf4j.version>1.7.25</slf4j.version>
     <poi.version>4.0.1</poi.version>
     <commons-cli.version>1.4</commons-cli.version>
-    <log4j2.version>2.8.2</log4j2.version>
     <junit.version>4.13.2</junit.version>
-    <maven-shade.version>2.3</maven-shade.version>
     <google-api-client.version>1.30.4</google-api-client.version>
     <google-sheets.version>v4-rev516-1.23.0</google-sheets.version>
+    <jackson-databind.version>2.12.4</jackson-databind.version>
 
     <!-- Checkstyle -->
     <!-- checkstyle.version corresponds to Eclipse Checkstyle plugin version -->
@@ -46,7 +45,7 @@
       <version>${slf4j.version}</version>
       <scope>runtime</scope>
     </dependency>
-
+ 
     <dependency>
       <groupId>com.google.api-client</groupId>
       <artifactId>google-api-client</artifactId>
@@ -82,25 +81,17 @@
       <artifactId>commons-cli</artifactId>
       <version>${commons-cli.version}</version>
     </dependency>
+    
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson-databind.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <version>${log4j2.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -193,29 +184,24 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
       </plugin>
-    
-      <!-- Maven Shade Plugin -->
+      
+      <!-- AppAssember -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>${maven-shade.version}</version>
-        <executions>
-          <!-- Run shade goal on package phase -->
-          <execution>
-            <phase>package</phase>
-            <goals>
-            <goal>shade</goal>
-            </goals>
-            <configuration>
-              <transformers>
-                <!-- add Main-Class to manifest file -->
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>edu.umd.lib.staffdir.Main</mainClass>
-                </transformer>
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>appassembler-maven-plugin</artifactId>
+        <version>1.10</version>
+        <configuration>
+          <programs>
+            <program>
+              <mainClass>edu.umd.lib.staffdir.StaffRetriever</mainClass>
+              <id>staff-retriever</id>
+            </program>
+            <program>
+              <mainClass>edu.umd.lib.staffdir.AllStaffListBuilder</mainClass>
+              <id>all-staff-list-builder</id>
+            </program>
+          </programs>
+        </configuration>
       </plugin>
     </plugins>
   </build>

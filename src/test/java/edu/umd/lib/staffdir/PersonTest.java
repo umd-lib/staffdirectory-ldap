@@ -134,8 +134,6 @@ public class PersonTest {
   public void testToString() {
     Person p = new Person("Test Person", new HashMap<String, Map<String, String>>());
     String str = p.toString();
-    System.out.println(str);
     assertTrue(str.startsWith("Person@"));
-
   }
 }
