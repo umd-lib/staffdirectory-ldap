@@ -131,6 +131,15 @@ public class ExcelGenerator {
         }
 
         // Derived Values
+
+        // Descriptive Title
+        String descriptiveTitle = p.getAllowNull("Staff", "Functional Title");
+        if ((descriptiveTitle == null) || descriptiveTitle.isEmpty()) {
+          descriptiveTitle = p.get("LDAP", "umDisplayTitle");
+        }
+        rowValues.put("Descriptive Title", descriptiveTitle);
+
+        // Expr1
         String expr1 = String.format("%s %s <%s>",
             p.get("LDAP", "givenName"),
             p.get("LDAP", "sn"),
