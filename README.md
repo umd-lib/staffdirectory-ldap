@@ -1,12 +1,14 @@
 # staffdirectory-ldap
 
-Java application for generating an Excel spreadsheet from LDAP.
-
-**Warning**: This is PROOF-OF-CONCEPT code only.
+Java application for generating an output documents using Staff Directory
+data retrieved from LDAP.
 
 ## Application configuration
 
 ### Google Sheets configuration
+
+This application utilizes a Google Sheets document to provide data and
+configuration to the application.
 
 This application communicates with Google via a Google service account, and
 the private key file for the account must be accessible to the application.
@@ -38,7 +40,7 @@ This application uses the Maven "Application Assembler" plugin
 <https://www.mojohaus.org/appassembler/appassembler-maven-plugin/>
 to create executable scripts for running different commands.
 
-To build the apllication, run:
+To build the application, run:
 
 ```
 > mvn clean package appassembler:assemble
@@ -65,6 +67,8 @@ This script uses the following sheets in the Google Drive document:
 * Staff
 * Organization
 
+See <docs/StaffRetrieveInputDocument.md> for information on these sheets.
+
 To run the script (from the project base directory):
 
 ```
@@ -72,12 +76,12 @@ To run the script (from the project base directory):
 ```
 
 where:
- 
+
 * \<CONFIG FILE> is the path to the configuration properties file
 * \<JSON OUTPUT FILE> the path location to create the JSON output
 
 For example, using
- 
+
 * \<CONFIG FILE> - "config.properties"
 * \<JSON OUTPUT FILE> - "staff.json"
 
@@ -92,7 +96,6 @@ the command would be:
 This script generates the "All Staff" spreadsheet from the JSON file created
 by the "staff-retriever" script.
 
-
 This script uses the following sheets in the Google Drive document:
 
 * All Staff List Mapping
@@ -105,13 +108,13 @@ To run the script (from the project base directory):
 ```
 
 where:
- 
+
 * \<CONFIG FILE> is the path to the configuration properties file
 * \<JSON INPUT FILE> the path location to the JSON file created by "staff-retriever"
 * \<EXCEL OUTPUT FILE> the path location to create the Excel spreadsheet
 
 For example, using
- 
+
 * \<CONFIG FILE> - "config.properties"
 * \<JSON INPUT FILE> - "staff.json"
 * \<EXCEL OUTPUT FILE> - "All Staff List New.xlsx"
