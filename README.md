@@ -1,6 +1,6 @@
 # staffdirectory-ldap
 
-Java application for generating an output documents using Staff Directory
+Java application for generating output documents using Staff Directory
 data retrieved from LDAP.
 
 ## Application configuration
@@ -10,8 +10,8 @@ data retrieved from LDAP.
 This application utilizes a Google Sheets document to provide data and
 configuration to the application.
 
-This application communicates with Google via a Google service account, and
-the private key file for the account must be accessible to the application.
+Communication with Google requires a Google service account, and the
+private key file for the account must be accessible to the application.
 
 The project associated with the service account must have the
 "Google Sheets API" enabled.
@@ -37,7 +37,7 @@ appropriate values.
 ## Running the application
 
 This application uses the Maven "Application Assembler" plugin
-<https://www.mojohaus.org/appassembler/appassembler-maven-plugin/>
+(<https://www.mojohaus.org/appassembler/appassembler-maven-plugin/>)
 to create executable scripts for running different commands.
 
 To build the application, run:
@@ -67,7 +67,8 @@ This script uses the following sheets in the Google Drive document:
 * Staff
 * Organization
 
-See <docs/StaffRetrieveInputDocument.md> for information on these sheets.
+See [docs/StaffRetrieverInputDocument.md](docs/StaffRetrieverInputDocument.md)
+for information on these sheets.
 
 To run the script (from the project base directory):
 
@@ -93,8 +94,8 @@ the command would be:
 
 ### all-staff-list-builder
 
-This script generates the "All Staff" spreadsheet from the JSON file created
-by the "staff-retriever" script.
+This script generates the "All Staff List" spreadsheet from the JSON file
+created by the "staff-retriever" script.
 
 This script uses the following sheets in the Google Drive document:
 
@@ -127,8 +128,9 @@ the command would be:
 
 ## Document Mappings
 
-See <docs/OutputDocumentMapping.md> for information on using the Google Sheets
-document for specifying the display of fields in the output document.
+See [docs/OutputDocumentMapping.md](docs/OutputDocumentMapping.md) for
+information on using the Google Sheets document for specifying the display of
+fields in the output document.
 
 ## License
 

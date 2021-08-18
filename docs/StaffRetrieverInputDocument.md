@@ -16,7 +16,7 @@ The script is reliant on the following sheets in the document:
 The "Staff" sheet has the following columns:
 
 * Directory ID
-* Name - the name of the person.
+* Name
 * Cost Center
 * Appt Fte
 * Faculty Perm Status
@@ -52,8 +52,7 @@ A "P" indicates the person has faculty permanent status.
 
 ### Functional Title
 
-Typically used by output documents to optionally override a title retrieved
-from LDAP.
+Used by output documents to optionally override a title retrieved from LDAP.
 
 ## Organization Sheet
 
@@ -71,10 +70,10 @@ structure. See "Cost Center" for an explanation for this structure.
 
 ### Cost Center
 
-The cost center, as a key to associate a person with a particular
+The cost center, is used as a key to associate a person with a particular
 division/department/unit and location.
 
-Note that cost centers consist of 6 digits, exhibiting a hierarchical structure:
+Cost centers consist of 6 digits, exhibiting a hierarchical structure:
 
 * the first two digits represent the division
 * the middle two digits represent the department

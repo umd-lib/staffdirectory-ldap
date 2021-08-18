@@ -12,32 +12,50 @@ how the column values are set and formatted.
 
 Each mapping sheet consists of the following columns:
 
-* Destination Field - the name of the field in the output (for example, the
-                      name of the column in the Excel spreadsheet)
-* Source - the data source, which can be one of:
-    * Derived - Data is a "derived" value (see below).
-    * LDAP - Data is retrieved from LDAP
-    * Staff - Data is retrieved from the "Staff" sheet of the Google Sheets
-              document
-* Source Field - The field in the source the data is retrieved from.
-    * For "Derived" the content is a human-readable description of how the field
-      is generated. The value is not used programmatically.
-    * For "Staff" the name must match a column header on the "Staff" sheet.
-    * For "LDAP" the name must match an LDAP attribute.
-* Display Type - the "type" of this field for use in formatting for display.
-                 The allowed values are determined by the output document.
-                 The "Text" type (which displays the value unchanged)
-                 should always be available.
+* Destination Field
+* Source
+* Source Field
+* Display Type
 
 The order of the rows in the mapping document determines the order of the
 fields in the output document.
+
+### Destination Field
+
+The name of the field in the output (for example, the name of the column in the
+Excel spreadsheet).
+
+### Source
+
+The data source, which can be one of:
+
+* Derived - Data is a "derived" value (see below).
+* LDAP - Data is retrieved from LDAP
+* Staff - Data is retrieved from the "Staff" sheet of the Google Sheets document
+
+### Source Field
+
+The field in the source the data is retrieved from.
+
+* For "Derived" the content is a human-readable description of how the field
+  is generated. The value is not used programmatically.
+* For "Staff" the value must match a column header on the "Staff" sheet.
+* For "LDAP" the value must match an LDAP attribute.
+
+### Display Type
+
+The "type" of the field for use in formatting for display.
+
+The allowed values are determined by the output document.
+
+The "Text" type (which displays the value unchanged) should always be available.
 
 ## Derived Values
 
 Marking the "Source" of a field as "Derived" indicates that it is the
 responsibility of the application to generate the value for that field.
 
-The "Source Field" would include a human-readable description of how the
+The "Source Field" should provide a human-readable description of how the
 field is derived, but this value is not used programmatically.
 
 It is suggested that, where possible, a "\<Source>::\<Field> pattern be followed
@@ -61,6 +79,6 @@ The following "Display Type" types are available:
 
 * CategoryStatus - Uses the "CategoryStatus" sheet to expand an abbreviation to
                    its full text
-* Percentage - The value is displayed as a numeric percentage
+* Percentage - Value is displayed as a numeric percentage
 * PhoneNumber - Value is treated as a phone number
-* Text - the value is displayed unchanged
+* Text - Value is displayed unchanged
