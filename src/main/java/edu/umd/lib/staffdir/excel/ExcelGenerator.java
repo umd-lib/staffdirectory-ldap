@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -147,10 +149,16 @@ public class ExcelGenerator {
 
           // Special handling for "Percentage" display types
           if ("Percentage".equals(fieldMapping.get("Display Type"))) {
-            String percentageValue = (rowValues.get(columnTitle) == null) ? "100" : rowValues.get(columnTitle);
-            double percentageValueAsDouble = Double.parseDouble(percentageValue);
-            double valueAsPercent = percentageValueAsDouble / 100.0;
-            cell.setCellValue(valueAsPercent);
+            String percentageValue = getDisplayValue("Percentage", rowValues.get(columnTitle));
+            try {
+              double percentageValueAsDouble = Double.parseDouble(percentageValue);
+              double valueAsPercent = percentageValueAsDouble / 100.0;
+              cell.setCellValue(valueAsPercent);
+            } catch (NumberFormatException nfe) {
+              log.warn("WARNING: Unable to parse '{}' as a percentage for '{}'. Setting field to empty.",
+                  percentageValue, p.uid);
+              cell.setCellValue("");
+            }
             cell.setCellStyle(percentageStyle);
           }
         }
@@ -190,9 +198,54 @@ public class ExcelGenerator {
     }
   }
 
-  public String getDisplayValue(String displayType, String value) {
-    if ("CategoryStatus".equals(displayType)) {
+  protected String getDisplayValue(String displayType, String value) {
+    if (displayType == null) {
+      log.warn("WARNING: Received null DisplayType. Returning value '{}' unchanged.", value);
+      return value;
+    }
+
+    switch (displayType) {
+    case "CategoryStatus":
       return categoryStatusMap.getOrDefault(value, value);
+    case "PhoneNumber":
+      return parsePhoneNumber(value);
+    case "Percentage":
+      // Null values are assumed to be 100%
+      if (value == null) {
+        return "100";
+      }
+      // Everything else just passes through
+      return value;
+    case "Text":
+      return value;
+    default:
+      log.warn("WARNING: Unhandled DisplayType '{}'. Returning value '{}' unchanged.", displayType, value);
+      return value;
+    }
+  }
+
+  /**
+   * Parses a value matching the expected phone number pattern to the pattern
+   * expected by the spreadsheet and returns. All non-matching values are
+   * returned unchanged.
+   *
+   * @param value
+   *          the value to parse
+   * @return the parsed phone number, if it matched the expected pattern, or the
+   *         unchanged value if it does not match.
+   */
+  protected String parsePhoneNumber(String value) {
+    Pattern phoneNumberPattern = Pattern.compile(
+        ".*(?<country>\\+\\w+)\\W+(?<areacode>\\w+)\\W(?<exchange>\\w+)\\W(?<line>\\w+).*");
+
+    if (value == null) {
+      return null;
+    }
+
+    Matcher m = phoneNumberPattern.matcher(value);
+    if (m.matches()) {
+      String parsedValue = String.format("%s%s%s", m.group("areacode"), m.group("exchange"), m.group("line"));
+      return parsedValue;
     }
     return value;
   }
