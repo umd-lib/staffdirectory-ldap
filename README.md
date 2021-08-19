@@ -84,12 +84,12 @@ where:
 For example, using
 
 * \<CONFIG FILE> - "config.properties"
-* \<JSON OUTPUT FILE> - "staff.json"
+* \<JSON OUTPUT FILE> - "persons.json"
 
 the command would be:
 
 ```
-> target/appassembler/bin/staff-retriever --config config.properties --output staff.json
+> target/appassembler/bin/staff-retriever --config config.properties --output psrsons.json
 ```
 
 ### all-staff-list-builder
@@ -117,13 +117,13 @@ where:
 For example, using
 
 * \<CONFIG FILE> - "config.properties"
-* \<JSON INPUT FILE> - "staff.json"
+* \<JSON INPUT FILE> - "persons.json"
 * \<EXCEL OUTPUT FILE> - "All Staff List New.xlsx"
 
 the command would be:
 
 ```
-> target/appassembler/bin/all-staff-list-builder --config config.properties --input staff.json --output "All Staff List New.xlsx"
+> target/appassembler/bin/all-staff-list-builder --config config.properties --input persons.json --output "All Staff List New.xlsx"
 ```
 
 ## Document Mappings
