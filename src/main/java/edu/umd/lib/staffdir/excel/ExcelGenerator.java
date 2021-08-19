@@ -207,6 +207,16 @@ public class ExcelGenerator {
     }
   }
 
+  /**
+   * Returns the String to display in the spreadsheet, based on the given value
+   * and display type
+   *
+   * @param displayType
+   *          the display type to use in formatting the value
+   * @param value
+   *          the value to format
+   * @return the String to display in the spreadsheet
+   */
   protected String getDisplayValue(String displayType, String value) {
     if (displayType == null) {
       log.warn("WARNING: Received null DisplayType. Returning value '{}' unchanged.", value);

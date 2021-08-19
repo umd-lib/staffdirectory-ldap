@@ -22,6 +22,9 @@ import javax.naming.ldap.LdapName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Handles communications with the LDAP server.
+ */
 public class Ldap {
   public static final Logger log = LoggerFactory.getLogger(Ldap.class);
 
@@ -31,8 +34,7 @@ public class Ldap {
   private String credentials;
   private String searchBaseDn;
 
-  // Specifies the LDAP attributes to return. Need to create a specific
-  // list, as "memberOf" isn't returned, unless specifically requested.
+  // Specifies the LDAP attributes to return
   private static final String[] LDAP_ATTRIBUTES = {
       "uid", "sn", "givenName", "telephoneNumber", "mail",
       "umOfficialTitle", "umDisplayTitle", "umPrimaryCampusRoom", "umPrimaryCampusBuilding",
@@ -46,7 +48,6 @@ public class Ldap {
     this.bindDn = bindDn;
     this.credentials = credentials;
     this.searchBaseDn = searchBaseDn;
-
   }
 
   /**
@@ -87,6 +88,18 @@ public class Ldap {
     return queryBatches;
   }
 
+  /**
+   * Returns a Map, keyed by uid, where each value is a Map containing the LDAP
+   * attributes for that person (keyed by LDAP attribute).
+   * <p>
+   * Note: If a uid is not found in LDAP, the returned Map will not contain an
+   * entry for that person.
+   *
+   * @param uids
+   *          the Set of LDAP uids to query
+   * @return a Map, keyed by uid, where each value is a Map containing the LDAP
+   *         attributes for that person (keyed by LDAP attribute).
+   */
   public Map<String, Map<String, String>> getUsers(Set<String> uids) {
     Map<String, Map<String, String>> results = new HashMap<>();
     Hashtable<String, Object> env = createLdapContext();
@@ -99,9 +112,7 @@ public class Ldap {
         String uid = m.get("uid");
         results.put(uid, m);
       }
-
     }
-
     return results;
   }
 
@@ -131,7 +142,8 @@ public class Ldap {
   }
 
   /**
-   * Performs the LDAP search, the SearchResult with the given uid.
+   * Performs the LDAP search, returning a (possible empty) List of
+   * SearchResults.
    *
    * @param env
    *          the Hashtable representing the LDAP environment context
@@ -139,8 +151,7 @@ public class Ldap {
    *          the base DN at which to start the search.
    * @param uid
    *          the uid for the user to return
-   * @return the first SearchResult matching the search, or null if the uid was
-   *         not found.
+   * @return a (posssibly empty) List of SearchResults for the given uidQuery.
    */
   private static List<SearchResult> performSearch(Hashtable<String, Object> env, String searchBaseDn, String uidQuery) {
     List<SearchResult> searchResults = new ArrayList<>();
@@ -172,22 +183,26 @@ public class Ldap {
   }
 
   /**
-   * Returns a List of Persons, converted from the given List of SearchResults
+   * Converts the given SearchResult into a Map, keyed by the LDAP attribute
+   * name, containing the LDAP attribute value.
    *
    * @param searchResults
    *          the List of SearchResults to convert
-   * @return a List of Persons, converted from the given List of SearchResults
+   * @return a Map, keyed by the LDAP attribute name, containing the LDAP
+   *         attribute value.
    */
   private static Map<String, String> asMap(SearchResult searchResult) {
     return asMap(searchResult.getAttributes());
   }
 
   /**
-   * Returns a Person, created from the given list of Attributes
+   * Converts the given Attributes into a Map, keyed by the LDAP attribute name,
+   * containing the LDAP attribute value.
    *
    * @param attrs
-   *          the Attributes to use in creating the Person.
-   * @return a Person, created from the given list of Attributes
+   *          the Attributes to use in creating the person Map.
+   * @return a Map, keyed by the LDAP attribute name, containing the LDAP
+   *         attribute value.
    */
   private static Map<String, String> asMap(Attributes attrs) {
     Map<String, String> result = new HashMap<>();
@@ -223,6 +238,5 @@ public class Ldap {
       return null;
     }
     return obj.toString();
-
   }
 }

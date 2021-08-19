@@ -20,6 +20,10 @@ import org.slf4j.LoggerFactory;
 import edu.umd.lib.staffdir.excel.ExcelGenerator;
 import edu.umd.lib.staffdir.google.SheetsRetriever;
 
+/**
+ * Command-line application for generating the "All Staff List.xlsx" file used
+ * by Hippo to populate the Staff Directory.
+ */
 public class AllStaffListBuilder {
   public static final Logger log = LoggerFactory.getLogger(AllStaffListBuilder.class);
 

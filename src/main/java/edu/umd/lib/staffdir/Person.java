@@ -26,8 +26,8 @@ public class Person {
 
   /**
    * Constructs a Person object with the given UID and Map of sources. The
-   * sources Map will typically include a "Staff", and "LDAP" derived from the
-   * Google sheets document containing information about a single person.
+   * sources Map will typically include a "Staff", and "LDAP" Map derived from
+   * the Google sheets document containing information about a single person.
    *
    * @param uid
    *          the unique identifier for the person
@@ -82,6 +82,17 @@ public class Person {
 
   }
 
+  /**
+   * Returns the value from the given source and field, or null if either the
+   * source or field is not found (or if the actual value is null).
+   *
+   * @param source
+   *          the key of the source Map to retrieve from the "sources" Map
+   * @param field
+   *          the key for the field to retrieve from the source Map
+   * @return the value from the given source and field, or null if either the
+   *         source or field is not found (or if the actual value is null).
+   */
   public String getAllowNull(String source, String field) {
     Map<String, String> src = sources.get(source);
     if (src == null) {
@@ -92,6 +103,9 @@ public class Person {
     return src.getOrDefault(field, null);
   }
 
+  /**
+   * @return a String representation of this object.
+   */
   @Override
   public String toString() {
     String str = String.format("Person@%s[uid: %s]",

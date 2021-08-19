@@ -27,7 +27,9 @@ import edu.umd.lib.staffdir.google.SheetsRetriever;
 import edu.umd.lib.staffdir.ldap.Ldap;
 
 /**
- * Application entrypoint for generating an Excel spreadsheet from LDAP
+ * Command-line application for retrieving Staff Directory information from LDAP
+ * and the Google Sheets document. This application outputs JSON, which can be
+ * used as input to other applications, such as "AllStaffListBuilder".
  */
 public class StaffRetriever {
   public static final Logger log = LoggerFactory.getLogger(StaffRetriever.class);
@@ -116,8 +118,18 @@ public class StaffRetriever {
     }
   }
 
-  public static Map<String, Map<String, String>> createStaffMap(List<Map<String, String>> rawStaffMap,
-      String uidField) {
+  /**
+   * Converts the given List of Maps into a Map of Maps, keyed by the uid.
+   *
+   * @param rawStaffMap
+   *          the List of Maps to convert
+   * @param uidField
+   *          the key in the Map to use to retrieve the uid.
+   * @return a Map of Maps, keyed by the uid.
+   *
+   */
+  private static Map<String, Map<String, String>> createStaffMap(
+      List<Map<String, String>> rawStaffMap, String uidField) {
     Map<String, Map<String, String>> results = new HashMap<>();
     for (Map<String, String> entry : rawStaffMap) {
       String uid = entry.get(uidField);
