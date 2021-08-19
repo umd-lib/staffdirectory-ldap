@@ -89,7 +89,7 @@ For example, using
 the command would be:
 
 ```
-> target/appassembler/bin/staff-retriever --config config.properties --output psrsons.json
+> target/appassembler/bin/staff-retriever --config config.properties --output persons.json
 ```
 
 ### all-staff-list-builder
