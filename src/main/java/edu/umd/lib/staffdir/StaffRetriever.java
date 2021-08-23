@@ -5,11 +5,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -70,20 +70,23 @@ public class StaffRetriever {
 
     List<Person> persons = new ArrayList<>();
     for (String uid : uids) {
-      Map<String, String> staffEntry = staff.get(uid);
-      Map<String, String> ldapEntry = ldapResults.get(uid);
+      if (!ldapResults.containsKey(uid)) {
+        log.warn("WARNING: Could not find '{}' in LDAP. Skipping.", uid);
+        continue;
+      }
+
+      // Wrapping each Map in TreeMap to ensure consistent ordering when
+      // output to JSON
+      Map<String, String> ldapEntry = new TreeMap<>(ldapResults.get(uid));
+      Map<String, String> staffEntry = new TreeMap<>(staff.get(uid));
       String costCenter = staffEntry.get("Cost Center");
-      Map<String, String> organizationEntry = organization.getOrganization(costCenter);
-      Map<String, Map<String, String>> sources = new HashMap<>();
+      Map<String, String> organizationEntry = new TreeMap<>(organization.getOrganization(costCenter));
+      Map<String, Map<String, String>> sources = new TreeMap<>();
       sources.put("Staff", staffEntry);
       sources.put("Organization", organizationEntry);
       sources.put("LDAP", ldapEntry);
 
-      if (ldapEntry != null) {
-        persons.add(new Person(uid, sources));
-      } else {
-        log.warn("WARNING: Could not find '{}' in LDAP. Skipping.", uid);
-      }
+      persons.add(new Person(uid, sources));
     }
 
     // Sort the persons by last name and first name
