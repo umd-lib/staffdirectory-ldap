@@ -1,5 +1,6 @@
 package edu.umd.lib.staffdir;
 
+import java.util.Comparator;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -112,5 +113,30 @@ public class Person {
         Integer.toHexString(System.identityHashCode(this)),
         uid);
     return str;
+  }
+
+  /**
+   * Sorts Person objects by Last Name and First Name, based on LDAP attributes
+   */
+  public static class LastNameFirstNameComparator implements Comparator<Person> {
+    @Override
+    public int compare(Person person1, Person person2) {
+      if (person1 == person2) {
+        return 0;
+      }
+
+      if (person1 == null) {
+        return -1;
+      }
+
+      if (person2 == null) {
+        return 1;
+      }
+
+      String person1SortKey = (person1.get("LDAP", "sn") + person1.get("LDAP", "givenName")).toLowerCase();
+      String person2SortKey = (person2.get("LDAP", "sn") + person2.get("LDAP", "givenName")).toLowerCase();
+
+      return person1SortKey.compareTo(person2SortKey);
+    }
   }
 }

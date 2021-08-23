@@ -11,13 +11,13 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-public class OrganizationsTest {
-  private List<Map<String, String>> rawOrganizationsList;
+public class OrganizationTest {
+  private List<Map<String, String>> rawOrganizationList;
 
   @Before
   public void setUp() {
     // Populated raw organizations list
-    rawOrganizationsList = new ArrayList<>();
+    rawOrganizationList = new ArrayList<>();
 
     String[] headers = {
         "Cost Center", "Division Code", "Division", "Department", "Unit", "Location"
@@ -37,7 +37,7 @@ public class OrganizationsTest {
         orgMap.put(headers[i], s);
         i++;
       }
-      rawOrganizationsList.add(orgMap);
+      rawOrganizationList.add(orgMap);
     }
   }
 
@@ -46,15 +46,15 @@ public class OrganizationsTest {
     Map<String, Map<String, String>> costCentersMap = null;
 
     // Null list
-    costCentersMap = Organizations.getCostCentersMap(null, "Cost Center");
+    costCentersMap = Organization.getCostCentersMap(null, "Cost Center");
     assertTrue(costCentersMap.isEmpty());
 
     // Empty list
-    costCentersMap = Organizations.getCostCentersMap(new ArrayList<Map<String, String>>(), "Cost Center");
+    costCentersMap = Organization.getCostCentersMap(new ArrayList<Map<String, String>>(), "Cost Center");
     assertTrue(costCentersMap.isEmpty());
 
     // Populated list
-    costCentersMap = Organizations.getCostCentersMap(rawOrganizationsList, "Cost Center");
+    costCentersMap = Organization.getCostCentersMap(rawOrganizationList, "Cost Center");
     Map<String, String> entry;
 
     assertTrue(costCentersMap.containsKey("030000"));
@@ -79,18 +79,18 @@ public class OrganizationsTest {
 
   @Test
   public void testCostCenterType() {
-    assertEquals(Organizations.Type.DIVISION, Organizations.getType("030000"));
-    assertEquals(Organizations.Type.DEPARTMENT, Organizations.getType("031800"));
-    assertEquals(Organizations.Type.UNIT, Organizations.getType("032211"));
+    assertEquals(Organization.Type.DIVISION, Organization.getType("030000"));
+    assertEquals(Organization.Type.DEPARTMENT, Organization.getType("031800"));
+    assertEquals(Organization.Type.UNIT, Organization.getType("032211"));
   }
 
   @Test
   public void testPopulateEntry() {
-    Map<String, Map<String, String>> costCentersMap = Organizations.getCostCentersMap(rawOrganizationsList,
+    Map<String, Map<String, String>> costCentersMap = Organization.getCostCentersMap(rawOrganizationList,
         "Cost Center");
     Map<String, String> entry;
 
-    entry = Organizations.populateEntry("030000", costCentersMap);
+    entry = Organization.populateEntry("030000", costCentersMap);
     assertEquals("030000", entry.get("Cost Center"));
     assertEquals("DO", entry.get("Division Code"));
     assertEquals("Dean's Office", entry.get("Division"));
@@ -98,7 +98,7 @@ public class OrganizationsTest {
     assertEquals("", entry.get("Unit"));
     assertEquals("Dean's Office", entry.get("Location"));
 
-    entry = Organizations.populateEntry("031800", costCentersMap);
+    entry = Organization.populateEntry("031800", costCentersMap);
     assertEquals("031800", entry.get("Cost Center"));
     assertEquals("DO", entry.get("Division Code"));
     assertEquals("Dean's Office", entry.get("Division"));
@@ -106,7 +106,7 @@ public class OrganizationsTest {
     assertEquals("", entry.get("Unit"));
     assertEquals("Development Office", entry.get("Location"));
 
-    entry = Organizations.populateEntry("032211", costCentersMap);
+    entry = Organization.populateEntry("032211", costCentersMap);
     assertEquals("032211", entry.get("Cost Center"));
     assertEquals("DO", entry.get("Division Code"));
     assertEquals("Dean's Office", entry.get("Division"));
@@ -118,18 +118,18 @@ public class OrganizationsTest {
 
   @Test
   public void testGetDivisionCostCenter() {
-    assertEquals("030000", Organizations.getDivisionCostCenter("030000"));
-    assertEquals("030000", Organizations.getDivisionCostCenter("031800"));
-    assertEquals("030000", Organizations.getDivisionCostCenter("032200"));
-    assertEquals("030000", Organizations.getDivisionCostCenter("032211"));
+    assertEquals("030000", Organization.getDivisionCostCenter("030000"));
+    assertEquals("030000", Organization.getDivisionCostCenter("031800"));
+    assertEquals("030000", Organization.getDivisionCostCenter("032200"));
+    assertEquals("030000", Organization.getDivisionCostCenter("032211"));
   }
 
   @Test
   public void testGetDepartmentCostCenter() {
-    assertEquals("030000", Organizations.getDepartmentCostCenter("030000"));
-    assertEquals("031800", Organizations.getDepartmentCostCenter("031800"));
-    assertEquals("032200", Organizations.getDepartmentCostCenter("032200"));
-    assertEquals("032200", Organizations.getDepartmentCostCenter("032211"));
+    assertEquals("030000", Organization.getDepartmentCostCenter("030000"));
+    assertEquals("031800", Organization.getDepartmentCostCenter("031800"));
+    assertEquals("032200", Organization.getDepartmentCostCenter("032200"));
+    assertEquals("032200", Organization.getDepartmentCostCenter("032211"));
   }
 
 }

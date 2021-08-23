@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +21,9 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.lib.staffdir.google.Organizations;
+import edu.umd.lib.staffdir.google.Organization;
 import edu.umd.lib.staffdir.google.SheetsRetriever;
+import edu.umd.lib.staffdir.google.Staff;
 import edu.umd.lib.staffdir.ldap.Ldap;
 
 /**
@@ -49,15 +49,14 @@ public class StaffRetriever {
     SheetsRetriever sr = new SheetsRetriever(appName, serviceAccountCredentialsFile);
 
     List<Map<String, String>> rawOrganizationsList = sr.toMap(spreadsheetDocId, "Organization");
-    List<Map<String, String>> rawStaffMap = sr.toMap(spreadsheetDocId, "Staff");
-
     String costCenterField = "Cost Center";
-    String uidField = "Directory ID";
-    Map<String, Map<String, String>> organizationsMap = Organizations.getCostCentersMap(rawOrganizationsList,
-        costCenterField);
-    Map<String, Map<String, String>> staffMap = createStaffMap(rawStaffMap, uidField);
+    Organization organization = new Organization(rawOrganizationsList, costCenterField);
 
-    Set<String> uids = staffMap.keySet();
+    List<Map<String, String>> rawStaffMap = sr.toMap(spreadsheetDocId, "Staff");
+    String uidField = "Directory ID";
+    Staff staff = new Staff(rawStaffMap, uidField);
+
+    Set<String> uids = staff.getUids();
 
     // LDAP configuration settings
     String ldapUrl = props.getProperty("ldap.url");
@@ -71,13 +70,13 @@ public class StaffRetriever {
 
     List<Person> persons = new ArrayList<>();
     for (String uid : uids) {
-      Map<String, String> staffEntry = staffMap.get(uid);
+      Map<String, String> staffEntry = staff.get(uid);
       Map<String, String> ldapEntry = ldapResults.get(uid);
       String costCenter = staffEntry.get("Cost Center");
-      Map<String, String> organization = organizationsMap.get(costCenter);
+      Map<String, String> organizationEntry = organization.getOrganization(costCenter);
       Map<String, Map<String, String>> sources = new HashMap<>();
       sources.put("Staff", staffEntry);
-      sources.put("Organization", organization);
+      sources.put("Organization", organizationEntry);
       sources.put("LDAP", ldapEntry);
 
       if (ldapEntry != null) {
@@ -88,54 +87,9 @@ public class StaffRetriever {
     }
 
     // Sort the persons by last name and first name
-    Collections.sort(persons, new PersonSorter());
+    Collections.sort(persons, new Person.LastNameFirstNameComparator());
 
     JsonUtils.writeToJson(persons, outputFilename);
-  }
-
-  /**
-   * Sorts Person objects by Last Name and First Name, based on LDAP attributes
-   */
-  static class PersonSorter implements Comparator<Person> {
-    @Override
-    public int compare(Person person1, Person person2) {
-      if (person1 == person2) {
-        return 0;
-      }
-
-      if (person1 == null) {
-        return -1;
-      }
-
-      if (person2 == null) {
-        return 1;
-      }
-
-      String person1SortKey = (person1.get("LDAP", "sn") + person1.get("LDAP", "givenName")).toLowerCase();
-      String person2SortKey = (person2.get("LDAP", "sn") + person2.get("LDAP", "givenName")).toLowerCase();
-
-      return person1SortKey.compareTo(person2SortKey);
-    }
-  }
-
-  /**
-   * Converts the given List of Maps into a Map of Maps, keyed by the uid.
-   *
-   * @param rawStaffMap
-   *          the List of Maps to convert
-   * @param uidField
-   *          the key in the Map to use to retrieve the uid.
-   * @return a Map of Maps, keyed by the uid.
-   *
-   */
-  private static Map<String, Map<String, String>> createStaffMap(
-      List<Map<String, String>> rawStaffMap, String uidField) {
-    Map<String, Map<String, String>> results = new HashMap<>();
-    for (Map<String, String> entry : rawStaffMap) {
-      String uid = entry.get(uidField);
-      results.put(uid, entry);
-    }
-    return results;
   }
 
   /**
