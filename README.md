@@ -105,25 +105,27 @@ This script uses the following sheets in the Google Drive document:
 To run the script (from the project base directory):
 
 ```
-> target/appassembler/bin/all-staff-list-builder --config <CONFIG FILE> --input <JSON INPUT FILE> --output <EXCEL OUTPUT FILE>
+> target/appassembler/bin/all-staff-list-builder --config <CONFIG FILE> [--password <PASSWORD>] --input <JSON INPUT FILE> --output <EXCEL OUTPUT FILE>
 ```
 
 where:
 
 * \<CONFIG FILE> is the path to the configuration properties file
+* \<PASSWORD> an (optional) password to use to protect the Excel spreadsheet
 * \<JSON INPUT FILE> the path location to the JSON file created by "staff-retriever"
 * \<EXCEL OUTPUT FILE> the path location to create the Excel spreadsheet
 
 For example, using
 
 * \<CONFIG FILE> - "config.properties"
+* \<PASSWORD> - "abcd"
 * \<JSON INPUT FILE> - "persons.json"
 * \<EXCEL OUTPUT FILE> - "All Staff List New.xlsx"
 
 the command would be:
 
 ```
-> target/appassembler/bin/all-staff-list-builder --config config.properties --input persons.json --output "All Staff List New.xlsx"
+> target/appassembler/bin/all-staff-list-builder --config config.properties --password abcd --input persons.json --output "All Staff List New.xlsx"
 ```
 
 ## Document Mappings

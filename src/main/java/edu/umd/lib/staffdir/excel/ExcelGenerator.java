@@ -55,7 +55,8 @@ public class ExcelGenerator {
    * @param persons
    *          the List of persons to include in the spreadsheet
    * @param password
-   *          the password to set on the Excel spreadsheet to protect it.
+   *          the password to set on the Excel spreadsheet to protect it, or
+   *          null for no password
    */
   public void generate(String filename, List<Person> persons, String password) {
     try (Workbook wb = new XSSFWorkbook()) {

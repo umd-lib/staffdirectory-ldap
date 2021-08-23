@@ -33,6 +33,7 @@ public class AllStaffListBuilder {
     String propFilename = cmdLine.getOptionValue("config");
     String inputFilename = cmdLine.getOptionValue("input");
     String outputFilename = cmdLine.getOptionValue("output");
+    String excelPassword = cmdLine.getOptionValue("password");
 
     Properties props = getProperties(propFilename);
 
@@ -46,8 +47,9 @@ public class AllStaffListBuilder {
 
     List<Map<String, String>> allStaffListMappings = sr.toMap(spreadsheetDocId, "All Staff List Mapping");
     List<Map<String, String>> categoryStatusAbbreviations = sr.toMap(spreadsheetDocId, "CategoryStatus");
+
     ExcelGenerator excelGenerator = new ExcelGenerator(allStaffListMappings, categoryStatusAbbreviations);
-    excelGenerator.generate(outputFilename, jsonPersons, "abcd");
+    excelGenerator.generate(outputFilename, jsonPersons, excelPassword);
   }
 
   /**
@@ -142,6 +144,11 @@ public class AllStaffListBuilder {
         .required()
         .desc("The properties file for containing Google credentials")
         .build();
+    Option passwordOption = Option.builder("p")
+        .longOpt("password")
+        .hasArg()
+        .desc("The password to protect the Excel spreadsheet")
+        .build();
     Option helpOption = Option.builder("h")
         .longOpt("help")
         .desc("Print this message")
@@ -151,6 +158,7 @@ public class AllStaffListBuilder {
     options.addOption(inputOption);
     options.addOption(outputOption);
     options.addOption(configOption);
+    options.addOption(passwordOption);
     options.addOption(helpOption);
 
     return options;
