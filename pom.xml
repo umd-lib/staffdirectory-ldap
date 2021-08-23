@@ -20,8 +20,8 @@
     <poi.version>4.0.1</poi.version>
     <commons-cli.version>1.4</commons-cli.version>
     <junit.version>4.13.2</junit.version>
-    <google-api-client.version>1.30.4</google-api-client.version>
     <google-sheets.version>v4-rev516-1.23.0</google-sheets.version>
+    <google-auth-library-oauth2-http.version>1.1.0</google-auth-library-oauth2-http.version>
     <jackson-databind.version>2.12.4</jackson-databind.version>
 
     <!-- Checkstyle -->
@@ -45,17 +45,11 @@
       <version>${slf4j.version}</version>
       <scope>runtime</scope>
     </dependency>
- 
-    <dependency>
-      <groupId>com.google.api-client</groupId>
-      <artifactId>google-api-client</artifactId>
-      <version>${google-api-client.version}</version>
-    </dependency>
     
     <dependency>
-        <groupId>com.google.oauth-client</groupId>
-        <artifactId>google-oauth-client-jetty</artifactId>
-        <version>1.30.3</version>
+      <groupId>com.google.auth</groupId>
+      <artifactId>google-auth-library-oauth2-http</artifactId>
+      <version>${google-auth-library-oauth2-http.version}</version>
     </dependency>
 
     <dependency>

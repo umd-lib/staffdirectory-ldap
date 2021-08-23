@@ -12,15 +12,17 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.auth.oauth2.OAuth2Credentials;
 
 /**
  * Converts a single sheet in a Google Sheets document into a List of Maps.
@@ -57,8 +59,8 @@ public class SheetsRetriever {
    * @throws IOException
    *           If the credentials.json file cannot be found.
    */
-  private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
-    GoogleCredential credential = GoogleCredential.fromStream(
+  private OAuth2Credentials getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
+    GoogleCredentials credential = GoogleCredentials.fromStream(
         new FileInputStream(this.serviceAccountCredentialsFile))
         .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS_READONLY));
     return credential;
@@ -80,9 +82,10 @@ public class SheetsRetriever {
       // Build a new authorized API client service.
       final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
       final String spreadsheetId = spreadsheetDocId;
-      JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-      Credential credentials = getCredentials(HTTP_TRANSPORT);
-      Sheets service = new Sheets.Builder(HTTP_TRANSPORT, jsonFactory, credentials)
+      JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
+      OAuth2Credentials credentials = getCredentials(HTTP_TRANSPORT);
+      HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
+      Sheets service = new Sheets.Builder(HTTP_TRANSPORT, jsonFactory, requestInitializer)
           .setApplicationName(this.appName)
           .build();
 
@@ -93,7 +96,7 @@ public class SheetsRetriever {
 
       return response;
     } catch (GeneralSecurityException | IOException e) {
-      System.out.println(e);
+      log.error("Could not retreive spreadsheetDocId='{}'", spreadsheetDocId, e);
     }
     return null;
   }
