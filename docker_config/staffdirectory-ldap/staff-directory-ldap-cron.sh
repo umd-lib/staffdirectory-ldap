@@ -22,6 +22,11 @@ cd "$SCRIPT_DIR"
 
 echo === Retrieving staff information ===
 bin/staff-retriever --config "$CONFIG_PROPERTIES_FILE" --output "$LATEST_JSON_FILE"
+RETRIEVER_RESULT=$?
+if [[ "$RETRIEVER_RESULT" -ne "0" ]]; then
+  echo "ERROR: bin/staff-retriever failed. Exiting."
+  exit 1
+fi
 
 # Exit if previous file exists, and it the same as the newly generated file
 if [ -f "$CURRENT_JSON_FILE" ]; then
