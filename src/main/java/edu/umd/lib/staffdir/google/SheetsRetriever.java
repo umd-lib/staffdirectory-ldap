@@ -96,7 +96,7 @@ public class SheetsRetriever {
 
       return response;
     } catch (GeneralSecurityException | IOException e) {
-      log.error("Could not retreive spreadsheetDocId='{}'", spreadsheetDocId, e);
+      log.error("Could not retrieve spreadsheetDocId='{}'", spreadsheetDocId, e);
     }
     return null;
   }
