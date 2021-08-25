@@ -22,16 +22,16 @@ specified in the the "client_email" field of the private key file.
 
 ### config.properties
 
-A "config.proprties" file is used for specifying application configuration,
+A "config.properties" file is used for specifying application configuration,
 including:
 
 * the LDAP connection information
 * the Google service account credentials file
 * the Google Sheets document to retrieve
 
-A sample "config.properties.example" file has been included in this repository.
+A sample "config.properties.template" file has been included in this repository.
 
-Copy the "config.properties.example" to "config.properties" and fill in the
+Copy the "config.properties.template" to "config.properties" and fill in the
 appropriate values.
 
 ## Running the application

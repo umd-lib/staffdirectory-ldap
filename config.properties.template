@@ -1,6 +1,6 @@
-# Configuration example file
+# Configuration templated file
 #
-# This file should be copied to "ldap.properties"
+# This file should be copied to "config.properties"
 # and filled in with the appropriate values
 
 # Google Configuration
