@@ -71,4 +71,8 @@ fi
 echo
 
 echo === Calling staff-list-drupal.sh ===
-echo TODO
+./staff-list-drupal.sh
+DRUPAL_RESULT=$?
+if [[ "$DRUPAL_RESULT" -ne "0" ]]; then
+  echo "ERROR: staff-list-drupal.sh failed."
+fi
