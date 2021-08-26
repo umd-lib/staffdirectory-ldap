@@ -23,8 +23,19 @@ cd "$SCRIPT_DIR"
 echo === Retrieving staff information ===
 bin/staff-retriever --config "$CONFIG_PROPERTIES_FILE" --output "$LATEST_JSON_FILE"
 RETRIEVER_RESULT=$?
+
 if [[ "$RETRIEVER_RESULT" -ne "0" ]]; then
   echo "ERROR: bin/staff-retriever failed. Exiting."
+  exit 1
+fi
+
+# Check length of LATEST_JSON_FILE and exit if it is empty or nearly empty.
+latest_json_filesize=$(wc -c $LATEST_JSON_FILE | awk '{print $1}')
+echo "'$LATEST_JSON_FILE' is $latest_json_filesize bytes"
+
+if (( $latest_json_filesize < 1000 )); then
+  echo "'$LATEST_JSON_FILE' is only $latest_json_filesize bytes."
+  echo "Probable retrieval failure. Exiting."
   exit 1
 fi
 
