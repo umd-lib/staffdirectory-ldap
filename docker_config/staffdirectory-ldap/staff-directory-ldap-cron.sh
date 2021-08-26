@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Script run via Cron to retrieve the Staff Directory information from
+# the Google Sheets document and LDAP, and generate the "All Staff List.xslx"
+# Excel spreadsheet and update Drupal
+#
 # To support Kubernetes volume mounting, this script uses the following
 # subdirectories of SCRIPT_DIR
 #
@@ -55,6 +59,8 @@ fi
 echo Moving "$LATEST_JSON_FILE" to "$CURRENT_JSON_FILE"
 mv $LATEST_JSON_FILE $CURRENT_JSON_FILE
 
+echo
+
 echo === Calling staff-list-excel.sh ===
 ./staff-list-excel.sh
 EXCEL_RESULT=$?
@@ -62,5 +68,7 @@ if [[ "$EXCEL_RESULT" -ne "0" ]]; then
   echo "ERROR: staff-list-excel.sh failed."
 fi
 
-echo === Call staff-list-drupal.sh ===
+echo
+
+echo === Calling staff-list-drupal.sh ===
 echo TODO

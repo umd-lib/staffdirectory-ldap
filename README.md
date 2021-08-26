@@ -149,13 +149,23 @@ the cron job in "k8s-staffdirectory-ldap", which cannot replace the file if it
 open for modification. Therefore the Excel spreadsheet used on the LAN should
 always have the user and password set.
 
-
 ## Document Mappings
 
 See [docs/OutputDocumentMapping.md](docs/OutputDocumentMapping.md) for
 information on using the Google Sheets document for specifying the display of
 fields in the output document.
 
+## Dockerfile-staffdir-cron and Kubernetes
+
+The "Dockerfile-staffdir-cron" creates a Docker image for use with the
+[umd-lib/k8s-staffdirectory-ldap][k8s-staffdirectory-ldap] Kubernetes
+configuration.
+
+The scripts used by CronJob are in the "docker_config/staffdirectory-ldap"
+directory.
+
 ## License
 
 See the [LICENSE](LICENSE.txt) file for license rights and limitations.
+
+[k8s-staffdirectory-ldap]: https://github.com/umd-lib/k8s-staffdirectory-ldap
