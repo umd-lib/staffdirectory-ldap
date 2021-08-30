@@ -5,19 +5,45 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Processes a "raw" organization List returned from the Google Sheets document
- * by populating any missing values from parent cost centers.
+ * Encapsulates the "Organization" sheet from the Google Sheets document,
+ * populating any missing values from parent cost centers.
  * <p>
  * This class is needed because the spreadsheet information is "sparse", i.e.
  * some information (such as the Division for a department cost center) is not
  * repeated on every row.
  */
-public class Organizations {
+public class Organization {
   /**
    * The list of organization types
    */
   enum Type {
-  DIVISION, DEPARTMENT, UNIT
+    DIVISION, DEPARTMENT, UNIT
+  }
+
+  private Map<String, Map<String, String>> organizationsMap;
+
+  /**
+   * Converts the raw List of Maps from SheetsRetriever into a Map of Maps,
+   * indexed by cost center.
+   *
+   * @param rawOrganizationsList
+   *          the raw List of Map<String, String> from SheetsRetriever
+   * @param costCenterField
+   *          the key in the map designating the cost center.
+   */
+  public Organization(List<Map<String, String>> rawOrganizationsList, String costCenterField) {
+    this.organizationsMap = Organization.getCostCentersMap(rawOrganizationsList, costCenterField);
+  }
+
+  /**
+   * Returns a Map of the organization for the given cost center.
+   *
+   * @param costCenter
+   *          the cost center of the organization to return
+   * @return a Map of the organization for the given cost center.
+   */
+  public Map<String, String> getOrganization(String costCenter) {
+    return organizationsMap.get(costCenter);
   }
 
   /**
@@ -30,7 +56,7 @@ public class Organizations {
    *          the String containing the map key to use for the cost center.
    * @return
    */
-  public static Map<String, Map<String, String>> getCostCentersMap(
+  protected static final Map<String, Map<String, String>> getCostCentersMap(
       List<Map<String, String>> rawOrganizationsList, String costCenterField) {
     Map<String, Map<String, String>> costCentersMap = new HashMap<>();
 
@@ -68,7 +94,7 @@ public class Organizations {
    * @return a Map for the cost center, populated with parent cost center
    *         information.
    */
-  protected static Map<String, String> populateEntry(String costCenter,
+  protected static final Map<String, String> populateEntry(String costCenter,
       Map<String, Map<String, String>> costCentersMap) {
     Map<String, String> entry = new HashMap<>(costCentersMap.get(costCenter));
 
@@ -101,7 +127,7 @@ public class Organizations {
    *          the cost center code to return the type of.
    * @return the Organization.TYPE for the given 6-digit cost center code.
    */
-  protected static Organizations.Type getType(String costCenter) {
+  protected static final Organization.Type getType(String costCenter) {
     String departmentCode = costCenter.substring(2, 4);
     String unitCode = costCenter.substring(4, 6);
 
@@ -121,7 +147,7 @@ public class Organizations {
    *          the cost center to retrieve the division cost center of
    * @return the division cost center associated with the given cost center
    */
-  protected static String getDivisionCostCenter(String costCenter) {
+  protected static final String getDivisionCostCenter(String costCenter) {
     String divisionCode = costCenter.substring(0, 2);
     return divisionCode + "0000";
   }
@@ -133,7 +159,7 @@ public class Organizations {
    *          the cost center to retrieve the division cost center of
    * @return the department cost center associated with the given cost center
    */
-  protected static String getDepartmentCostCenter(String costCenter) {
+  protected static final String getDepartmentCostCenter(String costCenter) {
     String departmentCode = costCenter.substring(0, 4);
     return departmentCode + "00";
   }

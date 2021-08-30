@@ -1,0 +1,6 @@
+Destination Field,Source,Source Field,Display Type
+LastName,LDAP,sn,Text
+FirstName,LDAP,givenName,Text
+PhoneNumber,LDAP,telephoneNumber,PhoneNumber
+Appt Fte,Staff,Appt Fte,Percentage
+Category Status,LDAP,umCatStatus,CategoryStatus

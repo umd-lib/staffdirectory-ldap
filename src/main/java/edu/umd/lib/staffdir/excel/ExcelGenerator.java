@@ -3,8 +3,11 @@ package edu.umd.lib.staffdir.excel;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -30,6 +33,20 @@ import edu.umd.lib.staffdir.Person;
 public class ExcelGenerator {
   public static final Logger log = LoggerFactory.getLogger(ExcelGenerator.class);
 
+  private List<Map<String, String>> fieldMappings;
+  private Map<String, String> categoryStatusMap;
+
+  public ExcelGenerator(
+      List<Map<String, String>> fieldMappings,
+      List<Map<String, String>> categoryStatusAbbreviations) {
+    this.fieldMappings = fieldMappings;
+
+    categoryStatusMap = new HashMap<>();
+    for (Map<String, String> categoryStatus : categoryStatusAbbreviations) {
+      categoryStatusMap.put(categoryStatus.get("Abbreviation"), categoryStatus.get("Full Text"));
+    }
+  }
+
   /**
    * Generates an Excel spreadsheet from the provided information
    *
@@ -38,9 +55,10 @@ public class ExcelGenerator {
    * @param persons
    *          the List of persons to include in the spreadsheet
    * @param password
-   *          the password to set on the Excel spreadsheet to protect it.
+   *          the password to set on the Excel spreadsheet to protect it, or
+   *          null for no password
    */
-  public static void generate(String filename, List<Person> persons, String password) {
+  public void generate(String filename, List<Person> persons, String password) {
     try (Workbook wb = new XSSFWorkbook()) {
 
       Sheet sheet = wb.createSheet("All Staff List");
@@ -48,19 +66,20 @@ public class ExcelGenerator {
       int rowIndex = 0;
 
       // Header row
-      String[] columnTitles = {
-          "LastName", "FirstName", "PhoneNumber", "E-mail", "Title", "RoomNo",
-          "Bldg", "Division", "Department", "Unit", "Location", "Appt Fte",
-          "Category Status", "Faculty Perm Status", "Descriptive Title",
-          "Expr1", "CostCenter"
-      };
+      String[] columnTitles = new String[fieldMappings.size()];
+      for (int i = 0; i < fieldMappings.size(); i++) {
+        columnTitles[i] = fieldMappings.get(i).get("Destination Field");
+      }
 
-      // Get column index of "Appy Fte" column, as it needs to be formatted
-      // as a percentage.
-      int fteColIndex = IntStream.range(0, columnTitles.length)
-          .filter(i -> "Appy Fte".equals(columnTitles[i]))
-          .findFirst() // first occurrence
-          .orElse(-1);
+      // Map columns in destination spreadsheet to fields in the field mappings
+      Map<String, Map<String, String>> columnTitlesToSourceFields = new HashMap<>();
+      for (String columnTitle : columnTitles) {
+        for (Map<String, String> fieldMapping : fieldMappings) {
+          if (columnTitle.equals(fieldMapping.get("Destination Field"))) {
+            columnTitlesToSourceFields.put(columnTitle, fieldMapping);
+          }
+        }
+      }
 
       // Gray background
       CellStyle style = wb.createCellStyle();
@@ -92,43 +111,64 @@ public class ExcelGenerator {
       for (Person p : persons) {
         row = sheet.createRow(rowIndex);
 
-        String categoryStatus = p.getCategoryStatus();
+        Map<String, String> rowValues = new HashMap<>();
 
-        String facultyPermStatus = p.isFacultyPermanentStatus() ? "P" : "";
-        String expr1 = String.format("%s %s <%s>", p.getFirstName(), p.getLastName(), p.getEmail());
+        for (String columnTitle : columnTitles) {
+          Map<String, String> fieldMapping = columnTitlesToSourceFields.get(columnTitle);
+          if (fieldMapping != null) {
+            String source = fieldMapping.get("Source");
+            String sourceField = fieldMapping.get("Source Field");
 
-        String[] rowValues = {
-            p.getLastName(),
-            p.getFirstName(),
-            p.getPhoneNumber(),
-            p.getEmail(),
-            p.getOfficialTitle(),
-            p.getRoomNumber(),
-            p.getBuilding(),
-            p.getDivision(),
-            p.getDepartment(),
-            p.getUnit(),
-            p.getLocation(),
-            "fte_as_percentage",
-            categoryStatus,
-            facultyPermStatus,
-            p.getDescriptiveTitle(),
-            expr1,
-            p.getCostCenter()
-        };
+            // Skip "Derived" source fields
+            if ("Derived".equals(source)) {
+              continue;
+            }
+            String value = p.getAllowNull(source, sourceField);
+            if (value != null) {
+              String displayValue = getDisplayValue(fieldMapping.get("Display Type"), value);
+              rowValues.put(columnTitle, displayValue);
+            }
+          }
+        }
 
-        for (int colIndex = 0; colIndex < rowValues.length; colIndex++) {
-          String value = rowValues[colIndex];
+        // Derived Values
+
+        // Descriptive Title
+        String descriptiveTitle = p.getAllowNull("Staff", "Functional Title");
+        if ((descriptiveTitle == null) || descriptiveTitle.isEmpty()) {
+          descriptiveTitle = p.get("LDAP", "umDisplayTitle");
+        }
+        rowValues.put("Descriptive Title", descriptiveTitle);
+
+        // Expr1
+        String expr1 = String.format("%s %s <%s>",
+            p.get("LDAP", "givenName"),
+            p.get("LDAP", "sn"),
+            p.get("LDAP", "mail"));
+
+        rowValues.put("Expr1", expr1);
+
+        for (int colIndex = 0; colIndex < columnTitles.length; colIndex++) {
+          String columnTitle = columnTitles[colIndex];
+          String value = rowValues.get(columnTitle);
 
           Cell cell = row.createCell(colIndex);
           cell.setCellValue(value);
 
-          // Special handling for FTE -- shown as a percentage
-          if ("fte_as_percentage".equals(value)) {
-            String fte = (p.getFte() == null) ? "100" : p.getFte();
-            double fteAsDouble = Double.parseDouble(fte);
-            double fteAsPercent = fteAsDouble / 100.0;
-            cell.setCellValue(fteAsPercent);
+          Map<String, String> fieldMapping = columnTitlesToSourceFields.get(columnTitle);
+
+          // Special handling for "Percentage" display types
+          if ("Percentage".equals(fieldMapping.get("Display Type"))) {
+            String percentageValue = getDisplayValue("Percentage", rowValues.get(columnTitle));
+            try {
+              double percentageValueAsDouble = Double.parseDouble(percentageValue);
+              double valueAsPercent = percentageValueAsDouble / 100.0;
+              cell.setCellValue(valueAsPercent);
+            } catch (NumberFormatException nfe) {
+              log.warn("WARNING: Unable to parse '{}' as a percentage for '{}'. Setting field to empty.",
+                  percentageValue, p.uid);
+              cell.setCellValue("");
+            }
             cell.setCellStyle(percentageStyle);
           }
         }
@@ -153,13 +193,80 @@ public class ExcelGenerator {
         ((XSSFSheet) sheet).addIgnoredErrors(allCells, IgnoredErrorType.NUMBER_STORED_AS_TEXT);
       }
 
+      // Turn on Autofiltering in each of the column headers
+      sheet.setAutoFilter(new CellRangeAddress(0, 0, 0, numColumns - 1));
+
       try (OutputStream fileOut = new FileOutputStream(filename)) {
         wb.write(fileOut);
       } catch (IOException ioe) {
-        log.error("I/O error writing out spreadsheet", ioe);
+        log.error("ERROR: I/O error writing out spreadsheet", ioe);
       }
-    } catch (IOException ioe) {
-      log.error("I/O error closing workbook", ioe);
+    } catch (
+
+    IOException ioe) {
+      log.error("ERROR: I/O error closing workbook", ioe);
     }
+  }
+
+  /**
+   * Returns the String to display in the spreadsheet, based on the given value
+   * and display type
+   *
+   * @param displayType
+   *          the display type to use in formatting the value
+   * @param value
+   *          the value to format
+   * @return the String to display in the spreadsheet
+   */
+  protected String getDisplayValue(String displayType, String value) {
+    if (displayType == null) {
+      log.warn("WARNING: Received null DisplayType. Returning value '{}' unchanged.", value);
+      return value;
+    }
+
+    switch (displayType) {
+    case "CategoryStatus":
+      return categoryStatusMap.getOrDefault(value, value);
+    case "PhoneNumber":
+      return parsePhoneNumber(value);
+    case "Percentage":
+      // Null values are assumed to be 100%
+      if (value == null) {
+        return "100";
+      }
+      // Everything else just passes through
+      return value;
+    case "Text":
+      return value;
+    default:
+      log.warn("WARNING: Unhandled DisplayType '{}'. Returning value '{}' unchanged.", displayType, value);
+      return value;
+    }
+  }
+
+  /**
+   * Parses a value matching the expected phone number pattern to the pattern
+   * expected by the spreadsheet and returns. All non-matching values are
+   * returned unchanged.
+   *
+   * @param value
+   *          the value to parse
+   * @return the parsed phone number, if it matched the expected pattern, or the
+   *         unchanged value if it does not match.
+   */
+  protected String parsePhoneNumber(String value) {
+    Pattern phoneNumberPattern = Pattern.compile(
+        ".*(?<country>\\+\\w+)\\W+(?<areacode>\\w+)\\W(?<exchange>\\w+)\\W(?<line>\\w+).*");
+
+    if (value == null) {
+      return null;
+    }
+
+    Matcher m = phoneNumberPattern.matcher(value);
+    if (m.matches()) {
+      String parsedValue = String.format("%s%s%s", m.group("areacode"), m.group("exchange"), m.group("line"));
+      return parsedValue;
+    }
+    return value;
   }
 }
