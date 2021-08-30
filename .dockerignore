@@ -1,0 +1,10 @@
+.classpath
+.project
+.settings/
+target/
+
+# Ignore project configuration file
+config.properties
+
+# Ignore Google credentials files
+staff-directory-ldap-a16650621f32.json
