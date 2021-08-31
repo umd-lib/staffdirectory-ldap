@@ -3,14 +3,12 @@ package edu.umd.lib.staffdir.excel;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.poi.poifs.crypt.CryptoFunctions;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -24,8 +22,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTFileSharing;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,14 +54,8 @@ public class ExcelGenerator {
    *          the filename of the Excel spreadsheet
    * @param persons
    *          the List of persons to include in the spreadsheet
-   * @param excelUser
-   *          the user to set on the Excel spreadsheet to enable modification. A
-   *          default will be used if null, and the password field is non-null.
-   * @param excelPassword
-   *          the password to set on the Excel spreadsheet to enable
-   *          modification, or null for no password
    */
-  public void generate(String filename, List<Person> persons, String excelUser, String excelPassword) {
+  public void generate(String filename, List<Person> persons) {
     try (Workbook wb = new XSSFWorkbook()) {
       Sheet sheet = wb.createSheet("All Staff List");
 
@@ -186,34 +176,6 @@ public class ExcelGenerator {
       int numRows = rowIndex;
       for (int columnIndex = 0; columnIndex < numColumns; columnIndex++) {
         sheet.autoSizeColumn(columnIndex);
-      }
-
-      if (excelPassword != null) {
-        // This following sets the spreadsheet as "Read-Only Recommended", and
-        // prevents modification without the specified password.
-        //
-        // This is needed when placing the file on the Library Shared Drive, as
-        // otherwise opening the file will "lock" the file, preventing it from
-        // being overwritten from the k8s-staffdirectory-ldap cron job.
-        CTWorkbook ctWorkbook = ((XSSFWorkbook) wb).getCTWorkbook();
-
-        CTFileSharing ctFileSharing = ctWorkbook.getFileSharing();
-        if (ctFileSharing == null) {
-          ctFileSharing = ctWorkbook.addNewFileSharing();
-        }
-
-        ctFileSharing.setReadOnlyRecommended(true);
-
-        if ((excelUser == null) || (excelUser.isEmpty())) {
-          excelUser = "Default User";
-        }
-
-        ctFileSharing.setUserName(excelUser);
-
-        short passwordhash = (short) CryptoFunctions.createXorVerifier1(excelPassword);
-
-        byte[] bpasswordhash = ByteBuffer.allocate(2).putShort(passwordhash).array();
-        ctFileSharing.setReservationPassword(bpasswordhash);
       }
 
       // Suppress the "Number Stored as Text" hint

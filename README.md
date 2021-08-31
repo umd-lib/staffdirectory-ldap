@@ -105,49 +105,26 @@ This script uses the following sheets in the Google Drive document:
 To run the script (from the project base directory):
 
 ```
-> target/appassembler/bin/all-staff-list-builder --config <CONFIG FILE> [--user <USER>] [--password <PASSWORD>] --input <JSON INPUT FILE> --output <EXCEL OUTPUT FILE>
+> target/appassembler/bin/all-staff-list-builder --config <CONFIG FILE> --input <JSON INPUT FILE> --output <EXCEL OUTPUT FILE>
 ```
 
 where:
 
 * \<CONFIG FILE> is the path to the configuration properties file
-* \<USER> an (optional) user used to protect the Excel spreadsheet.
-    Will use a default if not provided, and "password" is provided.
-* \<PASSWORD> an (optional) password required to modify the Excel spreadsheet
 * \<JSON INPUT FILE> the path location to the JSON file created by "staff-retriever"
 * \<EXCEL OUTPUT FILE> the path location to create the Excel spreadsheet
 
 For example, using
 
 * \<CONFIG FILE> - "config.properties"
-* \<USER> - "Test User"
-* \<PASSWORD> - "abcd"
 * \<JSON INPUT FILE> - "persons.json"
 * \<EXCEL OUTPUT FILE> - "All Staff List New.xlsx"
 
 the command would be:
 
 ```
-> target/appassembler/bin/all-staff-list-builder --config config.properties --user "Test User" --password abcd --input persons.json --output "All Staff List New.xlsx"
+> target/appassembler/bin/all-staff-list-builder --config config.properties --input persons.json --output "All Staff List New.xlsx"
 ```
-
-### Excel User and Password
-
-The "--user" and "--password" arguments are used to set the
-"ReadOnly-Recommended" flag on the Excel spreadsheet. When set, any user opening
-the Excel spreadsheet will be shown a dialog indicating that the file is
-"reserved by" the name given in "--user", and given an option to either type
-in the password, or open the file read-only. Only users entering the password
-can modify the Excel spreadsheet.
-
-The "user" setting is essentially cosmetic -- it is shown in the dialog, and
-has no other effect.
-
-The Excel spreadsheet is protected in this way because when opened normally,
-Excel "locks" the file, preventing it from being updated. This is a problem for
-the cron job in "k8s-staffdirectory-ldap", which cannot replace the file if it
-open for modification. Therefore the Excel spreadsheet used on the LAN should
-always have the user and password set.
 
 ## Document Mappings
 

@@ -9,8 +9,6 @@
 #    SMB_DIRECTORY - The Samba directory to upload the file to
 #    SMB_USER - the Samba username
 #    SMB_PASSWORD - the Samba password
-#    EXCEL_MODIFICATION_USER - The user to set on the Excel spreadsheet
-#    EXCEL_MODIFICATION_PASSWORD - The password to set on the Excel spreadsheet
 #    UPLOAD_EXCEL_FILENAME - The name of the uploaded file
 #    SMB_DO_UPLOAD - "true" if the upload should be performed. Any other value prevents upload
 
@@ -34,16 +32,6 @@ if [ -z "$SMB_PASSWORD" ]; then
   exit 1
 fi
 
-if [ -z "$EXCEL_MODIFICATION_USER" ]; then
-  echo "Please provide a non-empty 'EXCEL_MODIFICATION_USER' environment variable"
-  exit 1
-fi
-
-if [ -z "$EXCEL_MODIFICATION_PASSWORD" ]; then
-  echo "Please provide a non-empty 'EXCEL_MODIFICATION_PASSWORD' environment variable"
-  exit 1
-fi
-
 if [ -z "$UPLOAD_EXCEL_FILENAME" ]; then
   echo "Please provide a non-empty 'UPLOAD_EXCEL_FILENAME' environment variable"
   exit 1
@@ -55,7 +43,7 @@ JSON_FILE="$SCRIPT_DIR/output/persons.json"
 EXCEL_FILE="$SCRIPT_DIR/output/all-staff-list-new.xlsx"
 
 echo === Building Excel spreadsheet ===
-$SCRIPT_DIR/bin/all-staff-list-builder --user "$EXCEL_MODIFICATION_USER" --password "$EXCEL_MODIFICATION_PASSWORD" --config "$CONFIG_PROPERTIES_FILE" --input "$JSON_FILE" --output "$EXCEL_FILE"
+$SCRIPT_DIR/bin/all-staff-list-builder --config "$CONFIG_PROPERTIES_FILE" --input "$JSON_FILE" --output "$EXCEL_FILE"
 BUILD_RESULT=$?
 if (( $BUILD_RESULT != 0 )); then
   echo "ERROR: An error occurred running all-staff-list-builder."
