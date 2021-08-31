@@ -43,14 +43,6 @@ if (( $latest_json_filesize < 1000 )); then
   exit 1
 fi
 
-# Exit if previous file exists, and it the same as the newly generated file
-if [ -f "$CURRENT_JSON_FILE" ]; then
-  if diff -q "$CURRENT_JSON_FILE" "$LATEST_JSON_FILE"; then
-     echo "$CURRENT_JSON_FILE" and "$LATEST_JSON_FILE" are the same. Exiting.
-     exit 0
-  fi
-fi
-
 if [ -f "$CURRENT_JSON_FILE" ]; then
   echo Moving "$CURRENT_JSON_FILE" to "$BACKUP_JSON_FILE"
   mv "$CURRENT_JSON_FILE" "$BACKUP_JSON_FILE"
