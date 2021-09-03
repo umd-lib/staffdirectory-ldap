@@ -166,6 +166,6 @@ public class AllStaffListBuilder {
   private static void printHelp(Options options) {
     HelpFormatter formatter = new HelpFormatter();
     String header = "Generates an Excel spreadsheet from LDAP.";
-    formatter.printHelp(120, "staffdirectory-ldap", header, options, "", true);
+    formatter.printHelp(120, "all-staff-list-builder", header, options, "", true);
   }
 }
