@@ -208,6 +208,10 @@
               <mainClass>edu.umd.lib.staffdir.AllStaffListBuilder</mainClass>
               <id>all-staff-list-builder</id>
             </program>
+            <program>
+              <mainClass>edu.umd.lib.staffdir.DrupalBuilder</mainClass>
+              <id>drupal-builder</id>
+            </program>
           </programs>
         </configuration>
       </plugin>

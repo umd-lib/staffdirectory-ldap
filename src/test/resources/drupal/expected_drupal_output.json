@@ -1,0 +1,28 @@
+{
+  "testperson1" : {
+    "division" : "Digital Service and Technologies",
+    "unit" : "",
+    "phone" : "+1 555 123 4567",
+    "last_name" : "Person1",
+    "location" : "Test Room 1 Test Building 1",
+    "directory_id" : "testperson1",
+    "department" : "Software Systems Development and Research",
+    "title" : "Display Tester Level 1",
+    "display_name" : "Test Person1",
+    "first_name" : "Test",
+    "email" : "testperson1@example.com"
+  },
+  "testperson2" : {
+    "division" : "Administrative Services",
+    "unit" : "",
+    "phone" : "+1 555 234 5678",
+    "last_name" : "Person2",
+    "location" : "Test Room 2 Test Building 2",
+    "directory_id" : "testperson2",
+    "department" : "Budget & Business Services Office",
+    "title" : "Display Tester Level 2",
+    "display_name" : "Test Person2",
+    "first_name" : "Test",
+    "email" : "testperson2@example.com"
+  }
+}

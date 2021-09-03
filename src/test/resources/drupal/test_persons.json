@@ -1,0 +1,63 @@
+[ {
+  "uid" : "testperson1",
+  "sources" : {
+    "LDAP" : {
+      "givenName" : "Test",
+      "mail" : "testperson1@example.com",
+      "sn" : "Person1",
+      "telephoneNumber" : "+1 555 123 4567",
+      "uid" : "testperson1",
+      "umCatStatus" : "Exempt Reg",
+      "umDisplayTitle" : "Display Tester Level 1",
+      "umOfficialTitle" : "Official Tester Level 1",
+      "umOptionalTitle" : null,
+      "umPrimaryCampusBuilding" : "Test Building 1",
+      "umPrimaryCampusRoom" : "Test Room 1"
+    },
+    "Organization" : {
+      "Cost Center" : "044100",
+      "Department" : "Software Systems Development and Research",
+      "Division" : "Digital Service and Technologies",
+      "Division Code" : "DST",
+      "Location" : "SSDR",
+      "Unit" : ""
+    },
+    "Staff" : {
+      "Appt Fte" : "100",
+      "Cost Center" : "044100",
+      "Directory ID" : "testperson1",
+      "Name" : "Test Person1"
+    }
+  }
+}, {
+  "uid" : "testperson2",
+  "sources" : {
+    "LDAP" : {
+      "givenName" : "Test",
+      "mail" : "testperson2@example.com",
+      "sn" : "Person2",
+      "telephoneNumber" : "+1 555 234 5678",
+      "uid" : "testperson2",
+      "umCatStatus" : "Exempt Reg",
+      "umDisplayTitle" : "Display Tester Level 2",
+      "umOfficialTitle" : "Official Tester Level 2",
+      "umOptionalTitle" : "Optional Tester Level 2",
+      "umPrimaryCampusBuilding" : "Test Building 2",
+      "umPrimaryCampusRoom" : "Test Room 2"
+    },
+    "Organization" : {
+      "Cost Center" : "085000",
+      "Department" : "Budget & Business Services Office",
+      "Division" : "Administrative Services",
+      "Division Code" : "AS",
+      "Location" : "Budget Office",
+      "Unit" : ""
+    },
+    "Staff" : {
+      "Appt Fte" : "100",
+      "Cost Center" : "085000",
+      "Directory ID" : "testperson2",
+      "Name" : "Test Person2"
+    }
+  }
+} ]

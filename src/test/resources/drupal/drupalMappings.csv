@@ -1,0 +1,12 @@
+Destination Field,Source,Source Field,Display Type
+directory_id,Staff,Directory ID,Text
+division,Organization,Division,Text
+department,Organization,Department,Text
+unit,Organization,Unit,Text
+last_name,LDAP,sn,Text
+first_name,LDAP,givenName,Text
+phone,LDAP,telephoneNumber,Text
+email,LDAP,mail,Text
+title,Derived,"Staff::Functional Title if not empty, otherwise umDisplayTitle; if umOfficalTitle is Librarian I,II,III,IV then append ' (' + umOfficialTitle + ')'",Text
+display_name,Derived,"givenName + ' ' + sn",Text
+location,Derived,"umPrimaryCampusRoom + ' ' + umPrimaryCampusBuilding",Text
