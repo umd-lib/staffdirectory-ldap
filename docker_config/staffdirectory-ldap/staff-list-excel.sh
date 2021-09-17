@@ -13,27 +13,27 @@
 #    SMB_DO_UPLOAD - "true" if the upload should be performed. Any other value prevents upload
 
 if [ -z "$SMB_HOST" ]; then
-  echo "Please provide a non-empty 'SMB_HOST' environment variable"
+  echo "ERROR: Please provide a non-empty 'SMB_HOST' environment variable"
   exit 1
 fi
 
 if [ -z "$SMB_DIRECTORY" ]; then
-  echo "Please provide a non-empty 'SMB_DIRECTORY' environment variable"
+  echo "ERROR: Please provide a non-empty 'SMB_DIRECTORY' environment variable"
   exit 1
 fi
 
 if [ -z "$SMB_USER" ]; then
-  echo "Please provide a non-empty 'SMB_USER' environment variable"
+  echo "ERROR: Please provide a non-empty 'SMB_USER' environment variable"
   exit 1
 fi
 
 if [ -z "$SMB_PASSWORD" ]; then
-  echo "Please provide a non-empty 'SMB_PASSWORD' environment variable"
+  echo "ERROR: Please provide a non-empty 'SMB_PASSWORD' environment variable"
   exit 1
 fi
 
 if [ -z "$UPLOAD_EXCEL_FILENAME" ]; then
-  echo "Please provide a non-empty 'UPLOAD_EXCEL_FILENAME' environment variable"
+  echo "ERROR: Please provide a non-empty 'UPLOAD_EXCEL_FILENAME' environment variable"
   exit 1
 fi
 
