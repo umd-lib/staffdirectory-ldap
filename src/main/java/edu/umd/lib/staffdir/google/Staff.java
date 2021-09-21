@@ -37,11 +37,32 @@ public class Staff {
   private static Map<String, Map<String, String>> createStaffMap(
       List<Map<String, String>> rawStaffMap, String uidField) {
     Map<String, Map<String, String>> results = new HashMap<>();
+
     for (Map<String, String> entry : rawStaffMap) {
-      String uid = entry.get(uidField);
-      results.put(uid, entry);
+      String uid = entry.get(uidField).trim();
+      Map<String, String> trimmedEntries = trimMap(entry);
+      results.put(uid, trimmedEntries);
     }
     return results;
+  }
+
+  /**
+   * Returns a Map where every entry in the given Map has been "trimmed" by the
+   * "String.trim()" method.
+   *
+   * This is done because there is occasionally extra whitespace when users
+   * copy-and-paste entries into the source spreadsheet.
+   *
+   * @param rawMap
+   *          the Map to trim
+   * @return the trimmed map
+   */
+  private static Map<String, String> trimMap(Map<String, String> rawMap) {
+    Map<String, String> trimmedMap = new HashMap<>();
+    for (String key : rawMap.keySet()) {
+      trimmedMap.put(key, rawMap.get(key).trim());
+    }
+    return trimmedMap;
   }
 
   /**
