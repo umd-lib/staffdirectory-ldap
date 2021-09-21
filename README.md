@@ -55,6 +55,7 @@ The following application scripts are available:
 
 * staff-retriever
 * all-staff-list-builder
+* drupal-builder
 
 ### staff-retriever
 
@@ -124,6 +125,39 @@ the command would be:
 
 ```
 > target/appassembler/bin/all-staff-list-builder --config config.properties --input persons.json --output "All Staff List New.xlsx"
+```
+
+### drupal-builder
+
+This script generates a JSON file for uploading to Drupal, that Drupal then
+uses to update its Staff Directory entries.
+
+This script uses the following sheets in the Google Drive document:
+
+* Drupal Mapping
+
+To run the script (from the project base directory):
+
+```
+> target/appassembler/bin/drupal-builder --config <CONFIG FILE> --input <JSON INPUT FILE> --output <JSON OUTPUT FILE>
+```
+
+where:
+
+* \<CONFIG FILE> is the path to the configuration properties file
+* \<JSON INPUT FILE> the path location to the JSON file created by "staff-retriever"
+* \<JSON OUTPUT FILE> the path location for the output JSON file to upload to Drupal
+
+For example, using
+
+* \<CONFIG FILE> - "config.properties"
+* \<JSON INPUT FILE> - "persons.json"
+* \<JSON OUTPUT FILE> - "drupal.json"
+
+the command would be:
+
+```
+> target/appassembler/bin/all-staff-list-builder --config config.properties --input persons.json --output drupal.json
 ```
 
 ## Document Mappings

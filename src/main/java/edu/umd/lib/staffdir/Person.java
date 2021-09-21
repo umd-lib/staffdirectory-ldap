@@ -80,7 +80,33 @@ public class Person {
       log.warn("WARNING: uid: '{}' - Field '{}' not found in source '{}'. Returning empty string.", uid, field, source);
       return "";
     }
+  }
 
+  /**
+   * Returns true if this Person has the given source containing the given field
+   * and the field contains a non-null, non-empty value, false otherwise.
+   *
+   * @param sourceKey
+   *          the key of the source Map to retrieve from the "sources" Map
+   * @param fieldKey
+   *          the key for the field to retrieve from the source Map
+   * @return true if this Person has the given source containing the given field
+   *         and the field contains a non-null, non-empty value, false
+   *         otherwise.
+   */
+  public boolean hasValue(String sourceKey, String fieldKey) {
+    if (!sources.containsKey(sourceKey)) {
+      return false;
+    }
+
+    Map<String, String> source = sources.get(sourceKey);
+
+    if (!source.containsKey(fieldKey)) {
+      return false;
+    }
+
+    String value = source.get(fieldKey);
+    return (value != null) && (!"".equals(value.trim()));
   }
 
   /**

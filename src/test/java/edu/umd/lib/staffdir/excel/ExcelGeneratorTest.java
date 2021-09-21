@@ -3,23 +3,22 @@ package edu.umd.lib.staffdir.excel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import edu.umd.lib.staffdir.TestUtils;
 
 public class ExcelGeneratorTest {
   private ExcelGenerator excelGenerator;
 
   @Before
   public void setUp() throws Exception {
-    List<Map<String, String>> fieldMappings = fromCsvFile("src/test/resources/excel/allStaffFieldMappings.csv");
-    List<Map<String, String>> categoryStatusAbbreviations = fromCsvFile(
+    List<Map<String, String>> fieldMappings = TestUtils.fromCsvFile(
+        "src/test/resources/excel/allStaffFieldMappings.csv");
+    List<Map<String, String>> categoryStatusAbbreviations = TestUtils.fromCsvFile(
         "src/test/resources/excel/categoryStatusMap.csv");
     excelGenerator = new ExcelGenerator(fieldMappings, categoryStatusAbbreviations);
   }
@@ -90,18 +89,5 @@ public class ExcelGeneratorTest {
     // "+<country code> <area code> <exchange code> <line number>"
     // are converted to "<area code><exchange code><line number>"
     assertEquals("3014059195", excelGenerator.getDisplayValue(displayType, "+1 301 405 9195"));
-  }
-
-  private List<Map<String, String>> fromCsvFile(String filename) throws Exception {
-    List<Map<String, String>> records;
-    try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-      String[] headers = br.readLine().split(",");
-      records = br.lines().map(s -> s.split(","))
-          .map(t -> IntStream.range(0, t.length)
-              .boxed()
-              .collect(Collectors.toMap(i -> headers[i], i -> t[i])))
-          .collect(Collectors.toList());
-    }
-    return records;
   }
 }
