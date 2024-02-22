@@ -42,8 +42,8 @@ to create executable scripts for running different commands.
 
 To build the application, run:
 
-```
-> mvn clean package appassembler:assemble
+```zsh
+$ mvn clean package appassembler:assemble
 ```
 
 This will create a "target/appassembler" directory containing the application
@@ -73,8 +73,8 @@ for information on these sheets.
 
 To run the script (from the project base directory):
 
-```
-> target/appassembler/bin/staff-retriever --config <CONFIG FILE> --output <JSON OUTPUT FILE>
+```zsh
+$ target/appassembler/bin/staff-retriever --config <CONFIG FILE> --output <JSON OUTPUT FILE>
 ```
 
 where:
@@ -89,8 +89,8 @@ For example, using
 
 the command would be:
 
-```
-> target/appassembler/bin/staff-retriever --config config.properties --output persons.json
+```zsh
+$ target/appassembler/bin/staff-retriever --config config.properties --output persons.json
 ```
 
 ### all-staff-list-builder
@@ -105,8 +105,8 @@ This script uses the following sheets in the Google Drive document:
 
 To run the script (from the project base directory):
 
-```
-> target/appassembler/bin/all-staff-list-builder --config <CONFIG FILE> --input <JSON INPUT FILE> --output <EXCEL OUTPUT FILE>
+```zsh
+$ target/appassembler/bin/all-staff-list-builder --config <CONFIG FILE> --input <JSON INPUT FILE> --output <EXCEL OUTPUT FILE>
 ```
 
 where:
@@ -123,8 +123,8 @@ For example, using
 
 the command would be:
 
-```
-> target/appassembler/bin/all-staff-list-builder --config config.properties --input persons.json --output "All Staff List New.xlsx"
+```zsh
+$ target/appassembler/bin/all-staff-list-builder --config config.properties --input persons.json --output "All Staff List New.xlsx"
 ```
 
 ### drupal-builder
@@ -138,8 +138,8 @@ This script uses the following sheets in the Google Drive document:
 
 To run the script (from the project base directory):
 
-```
-> target/appassembler/bin/drupal-builder --config <CONFIG FILE> --input <JSON INPUT FILE> --output <JSON OUTPUT FILE>
+```zsh
+$ target/appassembler/bin/drupal-builder --config <CONFIG FILE> --input <JSON INPUT FILE> --output <JSON OUTPUT FILE>
 ```
 
 where:
@@ -156,8 +156,8 @@ For example, using
 
 the command would be:
 
-```
-> target/appassembler/bin/all-staff-list-builder --config config.properties --input persons.json --output drupal.json
+```zsh
+$ target/appassembler/bin/all-staff-list-builder --config config.properties --input persons.json --output drupal.json
 ```
 
 ## Document Mappings
