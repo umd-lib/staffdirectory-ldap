@@ -175,6 +175,18 @@ configuration.
 The scripts used by CronJob are in the "docker_config/staffdirectory-ldap"
 directory.
 
+### Using VS Code Dev Containers
+
+This repository has been configured to use VSCode's Development Containers.
+Upon opening this codebase in VSCode:
+
+1. A notification will pop up asking if the folder should be re-opened in a
+   container. Select "Yes". VS Code will restart and create a Docker container
+   (this takes a minute or two, if the Docker image has not previously been
+   downloaded).
+
+2. Open a terminal in VS Code to run commands.
+
 ## License
 
 See the [LICENSE](LICENSE.txt) file for license rights and limitations.
