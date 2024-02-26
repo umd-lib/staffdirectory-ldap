@@ -24,6 +24,12 @@
     <google-sheets.version>v4-rev516-1.23.0</google-sheets.version>
     <google-auth-library-oauth2-http.version>1.1.0</google-auth-library-oauth2-http.version>
     <jackson-databind.version>2.12.4</jackson-databind.version>
+    <!--
+      grouperClient version matches server version returned from
+      Grouper web services
+    -->
+    <grouperClient.version>2.5.66</grouperClient.version>
+
 
     <!-- Checkstyle -->
     <!-- checkstyle.version corresponds to Eclipse Checkstyle plugin version -->
@@ -39,14 +45,14 @@
       <artifactId>slf4j-api</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <version>${slf4j.version}</version>
       <scope>runtime</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>com.google.auth</groupId>
       <artifactId>google-auth-library-oauth2-http</artifactId>
@@ -58,7 +64,7 @@
       <artifactId>google-api-services-sheets</artifactId>
       <version>${google-sheets.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
@@ -82,11 +88,17 @@
       <artifactId>commons-cli</artifactId>
       <version>${commons-cli.version}</version>
     </dependency>
-        
+
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson-databind.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.internet2.middleware.grouper</groupId>
+      <artifactId>grouperClient</artifactId>
+      <version>${grouperClient.version}</version>
     </dependency>
 
     <dependency>
@@ -95,7 +107,7 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
@@ -192,7 +204,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
       </plugin>
-      
+
       <!-- AppAssember -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -211,6 +223,18 @@
             <program>
               <mainClass>edu.umd.lib.staffdir.DrupalBuilder</mainClass>
               <id>drupal-builder</id>
+            </program>
+            <program>
+              <mainClass>edu.umd.lib.staffdir.grouper.cli.GrouperListCli</mainClass>
+              <id>grouper-list</id>
+            </program>
+            <program>
+              <mainClass>edu.umd.lib.staffdir.grouper.cli.GrouperAddMembersCli</mainClass>
+              <id>grouper-add</id>
+            </program>
+            <program>
+              <mainClass>edu.umd.lib.staffdir.grouper.cli.GrouperDeleteMemberCli</mainClass>
+              <id>grouper-delete</id>
             </program>
           </programs>
         </configuration>

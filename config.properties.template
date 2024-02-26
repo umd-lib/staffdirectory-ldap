@@ -32,3 +32,14 @@ ldap.credentials=
 
 # The base DN from which to start the search
 ldap.searchBaseDn=ou=people,dc=umd,dc=edu
+
+# Grouper Configuration
+
+# The fully-qualified URL to the Grouper Web Services endpoint
+grouper.url=
+
+# The Grouper user
+grouper.user=
+
+# The password for the Grouper user
+grouper.password=

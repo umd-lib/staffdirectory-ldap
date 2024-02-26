@@ -28,6 +28,7 @@ including:
 * the LDAP connection information
 * the Google service account credentials file
 * the Google Sheets document to retrieve
+* The Grouper connection information
 
 A sample "config.properties.template" file has been included in this repository.
 
@@ -158,6 +159,105 @@ the command would be:
 
 ```zsh
 $ target/appassembler/bin/all-staff-list-builder --config config.properties --input persons.json --output drupal.json
+```
+
+### Grouper
+
+Application scripts have been added to enable the following Grouper operations:
+
+* grouper-list - List the members of a Grouper group
+* grouper-add - Add members to a Grouper group
+* grouper-delete - Delete members from a Grouper group
+
+Information about each command can be generated using the "--help" flag, i.e."
+
+```zsh
+$ grouper-add --help
+```
+
+#### grouper-list
+
+List the members of a Grouper group.
+
+```zsh
+$ target/appassembler/bin/grouper-list --config <CONFIG FILE> --groupName <GROUPER_GROUP_NAME>
+```
+
+where:
+
+* \<GROUPER_GROUP_NAME> is the name for the Grouper group.
+* \<CONFIG FILE> is the path to the configuration properties file
+
+For example, to list the members of the
+"Departmental_Groups:Libraries:Employees:Libraries-Staff-Exempt" group, using
+a "config.properties" file in the project project directory:
+
+* \<GROUPER_GROUP_NAME> - "Departmental_Groups:Libraries:Employees:Libraries-Staff-Exempt"
+* \<CONFIG FILE> - "config.properties"
+
+```zsh
+$ target/appassembler/bin/grouper-list --config config.properties --groupName Departmental_Groups:Libraries:Employees:Libraries-Staff-Exempt
+```
+
+Output is a list of names (equivalent to the "umDisplayName" field in LDAP) of
+the members of the specified Grouper group.
+
+#### grouper-add
+
+Add one or more members to a Grouper group.
+
+```zsh
+$ target/appassembler/bin/grouper-add --config <CONFIG FILE> --groupName <GROUPER_GROUP_NAME> --subjectIds <SUBJECT_IDS>
+```
+
+where:
+
+* \<GROUPER_GROUP_NAME> is the name for the Grouper group.
+* \<CONFIG FILE> is the path to the configuration properties file
+* \<SUBJECT_IDS> a comma-separated list of subject ids to add to the group. A
+  subject id is equivalent to the LDAP "employeeNumber" field.
+
+For example, to add the (fictitious) "John Smith", with employee number
+124567890 to the
+"Departmental_Groups:Libraries:Employees:Libraries-Staff-Exempt" group, using
+a "config.properties" file in the project project directory:
+
+* \<GROUPER_GROUP_NAME> - "Departmental_Groups:Libraries:Employees:Libraries-Staff-Exempt"
+* \<CONFIG FILE> - "config.properties"
+* \<SUBJECT_IDS> - "124567890"
+
+```zsh
+$ target/appassembler/bin/grouper-add --config config.properties --groupName Departmental_Groups:Libraries:Employees:Libraries-Staff-Exempt --subjectIds 124567890
+```
+
+
+
+#### grouper-delete
+
+Delete one or more members from a Grouper group.
+
+```zsh
+$ target/appassembler/bin/grouper-delete --config <CONFIG FILE> --groupName <GROUPER_GROUP_NAME> --subjectIds <SUBJECT_IDS>
+```
+
+where:
+
+* \<GROUPER_GROUP_NAME> is the name for the Grouper group.
+* \<CONFIG FILE> is the path to the configuration properties file
+* \<SUBJECT_IDS> a comma-separated list of subject ids to delete from the group.
+  A subject id is equivalent to the LDAP "employeeNumber" field.
+
+For example, to delete the (fictitious) "John Smith", with employee number
+124567890 from the
+"Departmental_Groups:Libraries:Employees:Libraries-Staff-Exempt" group, using
+a "config.properties" file in the project project directory:
+
+* \<GROUPER_GROUP_NAME> - "Departmental_Groups:Libraries:Employees:Libraries-Staff-Exempt"
+* \<CONFIG FILE> - "config.properties"
+* \<SUBJECT_IDS> - "124567890"
+
+```zsh
+$ target/appassembler/bin/grouper-delete --config config.properties --groupName Departmental_Groups:Libraries:Employees:Libraries-Staff-Exempt --subjectIds 124567890
 ```
 
 ## Document Mappings
