@@ -62,7 +62,13 @@ public class AllStaffListBuilder {
       log.info("Uploading All Staff to Google Drive");
       DriveUploader driveUploader = new DriveUploader(appName, googleUploadCredentialsFile);
       try {
-        driveUploader.UpdateFile(outputFilename, uploadId);
+        String idCheck = driveUploader.UpdateFile(outputFilename, uploadId);
+        if (!idCheck.isEmpty() && idCheck.contentEquals(uploadId)) {
+          log.info("All Staff List uploaded to Google Drive");
+        } else {
+          log.warn("Google Drive file ID mismatch '{}'",
+              uploadId, idCheck.isEmpty() ? "empty" : idCheck);
+        }
       } catch (IOException e) {
         log.error("Unable to upload file '{}' to Google Drive.", outputFilename);
         System.exit(1);

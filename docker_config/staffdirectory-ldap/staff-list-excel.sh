@@ -18,7 +18,7 @@ export CONFIG_PROPERTIES_FILE=$SCRIPT_DIR/config/config.properties
 JSON_FILE="$SCRIPT_DIR/output/persons.json"
 EXCEL_FILE="$SCRIPT_DIR/output/all-staff-list-new.xlsx"
 
-echo === Building Excel spreadsheet ===
+echo === Building Excel spreadsheet with DO_UPLOAD is $DO_UPLOAD ===
 $SCRIPT_DIR/bin/all-staff-list-builder --config "$CONFIG_PROPERTIES_FILE" --input "$JSON_FILE" --output "$EXCEL_FILE"
 BUILD_RESULT=$?
 if (( $BUILD_RESULT != 0 )); then

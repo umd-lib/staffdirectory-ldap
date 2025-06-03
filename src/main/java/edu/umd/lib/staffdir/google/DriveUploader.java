@@ -44,9 +44,9 @@ public class DriveUploader {
    *          the Google ID of the file to be updated
    */
   public String UpdateFile(String outputFileName, String uploadId) throws IOException {
-    GoogleCredentials credentials = GoogleCredentials.fromStream(
-        new FileInputStream(this.serviceAccountCredentialsFile))
-        .createScoped(Collections.singleton(DriveScopes.DRIVE_FILE));
+    FileInputStream keyFile = new FileInputStream(this.serviceAccountCredentialsFile);
+    GoogleCredentials credentials = GoogleCredentials.fromStream(keyFile)
+        .createScoped(Collections.singleton(DriveScopes.DRIVE));
 
     HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(
         credentials);
@@ -57,22 +57,25 @@ public class DriveUploader {
         .setApplicationName(this.appName)
         .build();
 
-    // Upload file photo.jpg on drive.
+    // Upload file to drive.
     File fileMetadata = new File();
     fileMetadata.setName("All Staff List.xlsx");
-    // File's content.
+
+    // Set file's content.
     java.io.File filePath = new java.io.File(outputFileName);
+
     // Specify media type and file-path for file.
-    FileContent mediaContent = new FileContent("application/vnd.ms-excel", filePath);
+    FileContent mediaContent = new FileContent("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filePath);
     try {
       Drive.Files.Update request = service.files().update(uploadId, new File(), mediaContent)
           .setFields("id");
+      request.setSupportsAllDrives(true);
       request.getMediaHttpUploader().setDirectUploadEnabled(true);
 
       File file = request.execute();
       return file.getId();
     } catch (GoogleJsonResponseException e) {
-      System.err.println("Unable to upload file: " + e.getDetails());
+      log.error("Unable to upload file: " + e.getDetails());
       throw e;
     }
   }
