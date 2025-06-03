@@ -47,7 +47,7 @@ public class DriveUploader {
     GoogleCredentials credentials = GoogleCredentials.fromStream(
         new FileInputStream(this.serviceAccountCredentialsFile))
         .createScoped(Collections.singleton(DriveScopes.DRIVE_FILE));
- 
+
     HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(
         credentials);
 

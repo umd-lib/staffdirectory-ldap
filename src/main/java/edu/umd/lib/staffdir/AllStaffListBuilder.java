@@ -162,6 +162,13 @@ public class AllStaffListBuilder {
         .required()
         .desc("The properties file for containing Google credentials")
         .build();
+    Option uploadOption = Option.builder("u")
+        .longOpt("upload")
+        .hasArg()
+        .argName("upload boolean")
+        .required()
+        .desc("Set true to upload to Google Drive")
+        .build();
     Option helpOption = Option.builder("h")
         .longOpt("help")
         .desc("Print this message")
@@ -172,6 +179,7 @@ public class AllStaffListBuilder {
     options.addOption(outputOption);
     options.addOption(configOption);
     options.addOption(helpOption);
+    options.addOption(uploadOption);
 
     return options;
   }
