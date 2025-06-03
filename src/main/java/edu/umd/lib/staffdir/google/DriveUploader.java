@@ -26,7 +26,7 @@ public class DriveUploader {
 
   /**
    * Class constructor for setting up Drive access
-   * 
+   *
    * @param appName
    * @param serviceAccountCredentialsFile
    */
@@ -39,7 +39,7 @@ public class DriveUploader {
    * Attempt an upload to Google Drive.
    *
    * @param outputFileName
-   *          path to file from params 
+   *          path to file from params
    * @param serviceAccountCredentialsFile
    *          the Google ID of the file to be updated
    */
@@ -47,9 +47,9 @@ public class DriveUploader {
     GoogleCredentials credentials = GoogleCredentials.fromStream(
         new FileInputStream(this.serviceAccountCredentialsFile))
         .createScoped(Collections.singleton(DriveScopes.DRIVE_FILE));
-  
+ 
     HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(
-      credentials);
+        credentials);
 
     Drive service = new Drive.Builder(new NetHttpTransport(),
         GsonFactory.getDefaultInstance(),
