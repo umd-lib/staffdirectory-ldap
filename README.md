@@ -28,6 +28,7 @@ including:
 * the LDAP connection information
 * the Google service account credentials file
 * the Google Sheets document to retrieve
+* the Google Drive upload credentials and file ID
 
 A sample "config.properties.template" file has been included in this repository.
 
@@ -106,7 +107,7 @@ This script uses the following sheets in the Google Drive document:
 To run the script (from the project base directory):
 
 ```
-> target/appassembler/bin/all-staff-list-builder --config <CONFIG FILE> --input <JSON INPUT FILE> --output <EXCEL OUTPUT FILE>
+> target/appassembler/bin/all-staff-list-builder --config <CONFIG FILE> --input <JSON INPUT FILE> --output <EXCEL OUTPUT FILE> --upload <UPLOAD BOOL>
 ```
 
 where:
@@ -114,17 +115,19 @@ where:
 * \<CONFIG FILE> is the path to the configuration properties file
 * \<JSON INPUT FILE> the path location to the JSON file created by "staff-retriever"
 * \<EXCEL OUTPUT FILE> the path location to create the Excel spreadsheet
+* \<UPLOAD BOOL> true or false depending on whether to upload to Google Drive
 
 For example, using
 
 * \<CONFIG FILE> - "config.properties"
 * \<JSON INPUT FILE> - "persons.json"
 * \<EXCEL OUTPUT FILE> - "All Staff List New.xlsx"
+* \<UPLOAD BOOL> - true
 
 the command would be:
 
 ```
-> target/appassembler/bin/all-staff-list-builder --config config.properties --input persons.json --output "All Staff List New.xlsx"
+> target/appassembler/bin/all-staff-list-builder --config config.properties --input persons.json --output "All Staff List New.xlsx --upload true"
 ```
 
 ### drupal-builder
