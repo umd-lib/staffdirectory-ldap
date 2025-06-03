@@ -5,32 +5,8 @@
 #
 # The following environment variables are expected by this script:
 #
-#    SMB_HOST - The Samba host (typically '//librfs001v.ad.umd.edu/department$')
-#    SMB_DIRECTORY - The Samba directory to upload the file to
-#    SMB_USER - the Samba username
-#    SMB_PASSWORD - the Samba password
 #    UPLOAD_EXCEL_FILENAME - The name of the uploaded file
-#    SMB_DO_UPLOAD - "true" if the upload should be performed. Any other value prevents upload
-
-if [ -z "$SMB_HOST" ]; then
-  echo "ERROR: Please provide a non-empty 'SMB_HOST' environment variable"
-  exit 1
-fi
-
-if [ -z "$SMB_DIRECTORY" ]; then
-  echo "ERROR: Please provide a non-empty 'SMB_DIRECTORY' environment variable"
-  exit 1
-fi
-
-if [ -z "$SMB_USER" ]; then
-  echo "ERROR: Please provide a non-empty 'SMB_USER' environment variable"
-  exit 1
-fi
-
-if [ -z "$SMB_PASSWORD" ]; then
-  echo "ERROR: Please provide a non-empty 'SMB_PASSWORD' environment variable"
-  exit 1
-fi
+#    DO_UPLOAD - "true" if the upload should be performed. Any other value prevents upload
 
 if [ -z "$UPLOAD_EXCEL_FILENAME" ]; then
   echo "ERROR: Please provide a non-empty 'UPLOAD_EXCEL_FILENAME' environment variable"
@@ -47,25 +23,6 @@ $SCRIPT_DIR/bin/all-staff-list-builder --config "$CONFIG_PROPERTIES_FILE" --inpu
 BUILD_RESULT=$?
 if (( $BUILD_RESULT != 0 )); then
   echo "ERROR: An error occurred running all-staff-list-builder."
-  echo $SCRIPT_DIR/bin/all-staff-list-builder --config "$CONFIG_PROPERTIES_FILE" --input "$JSON_FILE" --output "$EXCEL_FILE"
-  exit 1
-fi
-
-if [ $SMB_DO_UPLOAD != "true" ]; then
-  echo === Skipping Excel upload -- SMB_DO_UPLOAD is \'$SMB_DO_UPLOAD\' ===
-  exit 0
-fi
-
-echo === Uploading updated Excel spreadsheet ===
-/usr/bin/smbclient \
-  "$SMB_HOST" \
-  --user $SMB_USER%$SMB_PASSWORD \
-  -D "$SMB_DIRECTORY" \
-  -c "put "\""$EXCEL_FILE"\"" "\""$UPLOAD_EXCEL_FILENAME"\"""
-
-TRANSFER_RESULT=$?
-
-if (( $TRANSFER_RESULT != 0 )); then
-  echo "ERROR: An error occurred transferring Excel spreadsheet to Samba"
+  echo $SCRIPT_DIR/bin/all-staff-list-builder --config "$CONFIG_PROPERTIES_FILE" --input "$JSON_FILE" --output "$EXCEL_FILE" --upload "$DO_UPLOAD"
   exit 1
 fi

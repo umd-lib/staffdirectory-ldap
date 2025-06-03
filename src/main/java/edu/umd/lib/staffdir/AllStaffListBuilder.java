@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import edu.umd.lib.staffdir.excel.ExcelGenerator;
 import edu.umd.lib.staffdir.google.SheetsRetriever;
+import edu.umd.lib.staffdir.google.DriveUploader;
 
 /**
  * Command-line application for generating the "All Staff List.xlsx" file used
@@ -33,6 +34,7 @@ public class AllStaffListBuilder {
     String propFilename = cmdLine.getOptionValue("config");
     String inputFilename = cmdLine.getOptionValue("input");
     String outputFilename = cmdLine.getOptionValue("output");
+    String upload = cmdLine.getOptionValue("upload");
 
     Properties props = getProperties(propFilename);
 
@@ -49,6 +51,23 @@ public class AllStaffListBuilder {
 
     ExcelGenerator excelGenerator = new ExcelGenerator(allStaffListMappings, categoryStatusAbbreviations);
     excelGenerator.generate(outputFilename, jsonPersons);
+
+    if (!upload.isEmpty() && upload.contains("true")) {
+      String googleUploadCredentialsFile = props.getProperty("googleUploadCredentialsFile");
+      String uploadId = props.getProperty("uploadId");
+      if (uploadId.isEmpty()) {
+        log.error("Missing Google Drive uploadId property.");
+        System.exit(1);
+      }
+      log.info("Uploading All Staff to Google Drive");
+      DriveUploader driveUploader = new DriveUploader(appName, googleUploadCredentialsFile);
+      try {
+        driveUploader.UpdateFile(outputFilename, uploadId);
+      } catch (IOException e) {
+        log.error("Unable to upload file '{}' to Google Drive.", outputFilename);
+        System.exit(1);
+      }
+    }
   }
 
   /**
