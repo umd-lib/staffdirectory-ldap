@@ -12,9 +12,16 @@ appName=staffdirectory-ldap
 # containing the service account credentials
 serviceAccountCredentialsFile=
 
+# The fully-qualified path and filename of the JSON file
+# for the Google Upload service account credentials.
+# This could be the same as serviceAccountCredentialsFile.
+googleUploadCredentialsFile=
+
 # The spreadsheet document id (from the URL)
 spreadsheetDocId=
 
+# The All Staff List upload id (from the URL)
+uploadId=
 
 # LDAP Configuration
 

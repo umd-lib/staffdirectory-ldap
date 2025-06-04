@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import edu.umd.lib.staffdir.excel.ExcelGenerator;
 import edu.umd.lib.staffdir.google.SheetsRetriever;
+import edu.umd.lib.staffdir.google.DriveUploader;
 
 /**
  * Command-line application for generating the "All Staff List.xlsx" file used
@@ -33,6 +34,7 @@ public class AllStaffListBuilder {
     String propFilename = cmdLine.getOptionValue("config");
     String inputFilename = cmdLine.getOptionValue("input");
     String outputFilename = cmdLine.getOptionValue("output");
+    String upload = cmdLine.getOptionValue("upload");
 
     Properties props = getProperties(propFilename);
 
@@ -49,6 +51,29 @@ public class AllStaffListBuilder {
 
     ExcelGenerator excelGenerator = new ExcelGenerator(allStaffListMappings, categoryStatusAbbreviations);
     excelGenerator.generate(outputFilename, jsonPersons);
+
+    if (!upload.isEmpty() && upload.contains("true")) {
+      String googleUploadCredentialsFile = props.getProperty("googleUploadCredentialsFile");
+      String uploadId = props.getProperty("uploadId");
+      if (uploadId.isEmpty()) {
+        log.error("Missing Google Drive uploadId property.");
+        System.exit(1);
+      }
+      log.info("Uploading All Staff to Google Drive");
+      DriveUploader driveUploader = new DriveUploader(appName, googleUploadCredentialsFile);
+      try {
+        String idCheck = driveUploader.UpdateFile(outputFilename, uploadId);
+        if (!idCheck.isEmpty() && idCheck.contentEquals(uploadId)) {
+          log.info("All Staff List uploaded to Google Drive");
+        } else {
+          log.warn("Google Drive file ID mismatch '{}'",
+              uploadId, idCheck.isEmpty() ? "empty" : idCheck);
+        }
+      } catch (IOException e) {
+        log.error("Unable to upload file '{}' to Google Drive.", outputFilename);
+        System.exit(1);
+      }
+    }
   }
 
   /**
@@ -143,6 +168,13 @@ public class AllStaffListBuilder {
         .required()
         .desc("The properties file for containing Google credentials")
         .build();
+    Option uploadOption = Option.builder("u")
+        .longOpt("upload")
+        .hasArg()
+        .argName("upload boolean")
+        .required()
+        .desc("Set true to upload to Google Drive")
+        .build();
     Option helpOption = Option.builder("h")
         .longOpt("help")
         .desc("Print this message")
@@ -153,6 +185,7 @@ public class AllStaffListBuilder {
     options.addOption(outputOption);
     options.addOption(configOption);
     options.addOption(helpOption);
+    options.addOption(uploadOption);
 
     return options;
   }
