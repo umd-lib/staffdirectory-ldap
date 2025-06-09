@@ -2,7 +2,7 @@
 #
 # To build:
 #
-# docker build -t docker.lib.umd.edu/staffdirectory-ldap:<VERSION> -f Dockerfile-staffdir-cron .
+# docker buildx build --platform linux/amd64 -t docker.lib.umd.edu/staffdirectory-ldap:1.1.0 -f Dockerfile-staffdir-cron . --push
 #
 # where <VERSION> is the Docker image version to create.
 # FROM maven:3.8.1-openjdk-8-slim AS compile
