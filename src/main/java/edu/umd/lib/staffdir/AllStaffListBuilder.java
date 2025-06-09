@@ -171,8 +171,13 @@ public class AllStaffListBuilder {
         .longOpt("upload")
         .hasArg()
         .argName("upload boolean")
-        .required()
         .desc("Set true to upload to Google Drive")
+        .build();
+    Option uploadIdOption = Option.builder("d")
+        .longOpt("uploadId")
+        .hasArg()
+        .argName("upload ID")
+        .desc("Google Drive document ID for upload")
         .build();
     Option helpOption = Option.builder("h")
         .longOpt("help")
@@ -185,6 +190,7 @@ public class AllStaffListBuilder {
     options.addOption(configOption);
     options.addOption(helpOption);
     options.addOption(uploadOption);
+    options.addOption(uploadIdOption);
 
     return options;
   }

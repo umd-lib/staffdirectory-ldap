@@ -5,7 +5,8 @@
 # docker build -t docker.lib.umd.edu/staffdirectory-ldap:<VERSION> -f Dockerfile-staffdir-cron .
 #
 # where <VERSION> is the Docker image version to create.
-FROM maven:3.8.2-openjdk-8-slim AS compile
+# FROM maven:3.8.1-openjdk-8-slim AS compile
+FROM maven@sha256:41243c64dd521da78a8eb33323fdc666957f0c68ca3522c6111030e6b002d648 AS compile
 
 RUN apt-get update && \
     apt-get install -y git && \
@@ -21,7 +22,8 @@ RUN mvn clean package appassembler:assemble
 
 # Note: Cannot use "slim" version because of font libraries needed to generate
 # the Excel spreadsheet
-FROM openjdk:8u292-jre-buster
+# FROM openjdk:8u292-jre-buster
+FROM openjdk@sha256:aabbce962afa3d37c8f9d8e1482d4aed7969e20d51f1680f85b8a4693b5993bc
 
 # Samba client needed to transfer to file to LAN
 RUN apt-get update && \
