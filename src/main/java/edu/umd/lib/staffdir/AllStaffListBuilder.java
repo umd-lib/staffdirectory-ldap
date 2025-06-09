@@ -35,6 +35,7 @@ public class AllStaffListBuilder {
     String inputFilename = cmdLine.getOptionValue("input");
     String outputFilename = cmdLine.getOptionValue("output");
     String upload = cmdLine.getOptionValue("upload");
+    String uploadId = cmdLine.getOptionValue("uploadId");
 
     Properties props = getProperties(propFilename);
 
@@ -53,14 +54,12 @@ public class AllStaffListBuilder {
     excelGenerator.generate(outputFilename, jsonPersons);
 
     if (!upload.isEmpty() && upload.contains("true")) {
-      String googleUploadCredentialsFile = props.getProperty("googleUploadCredentialsFile");
-      String uploadId = props.getProperty("uploadId");
       if (uploadId.isEmpty()) {
         log.error("Missing Google Drive uploadId property.");
         System.exit(1);
       }
       log.info("Uploading All Staff to Google Drive");
-      DriveUploader driveUploader = new DriveUploader(appName, googleUploadCredentialsFile);
+      DriveUploader driveUploader = new DriveUploader(appName, serviceAccountCredentialsFile);
       try {
         String idCheck = driveUploader.UpdateFile(outputFilename, uploadId);
         if (!idCheck.isEmpty() && idCheck.contentEquals(uploadId)) {

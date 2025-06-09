@@ -7,6 +7,7 @@
 #
 #    UPLOAD_EXCEL_FILENAME - The name of the uploaded file
 #    DO_UPLOAD - "true" if the upload should be performed. Any other value prevents upload
+#    UPLOAD_ID - Google Drive ID of file to be uploaded
 
 if [ -z "$UPLOAD_EXCEL_FILENAME" ]; then
   echo "ERROR: Please provide a non-empty 'UPLOAD_EXCEL_FILENAME' environment variable"
@@ -23,6 +24,6 @@ $SCRIPT_DIR/bin/all-staff-list-builder --config "$CONFIG_PROPERTIES_FILE" --inpu
 BUILD_RESULT=$?
 if (( $BUILD_RESULT != 0 )); then
   echo "ERROR: An error occurred running all-staff-list-builder."
-  echo $SCRIPT_DIR/bin/all-staff-list-builder --config "$CONFIG_PROPERTIES_FILE" --input "$JSON_FILE" --output "$EXCEL_FILE" --upload "$DO_UPLOAD"
+  echo $SCRIPT_DIR/bin/all-staff-list-builder --config "$CONFIG_PROPERTIES_FILE" --input "$JSON_FILE" --output "$EXCEL_FILE" --upload "$DO_UPLOAD" --uploadId "$UPLOAD_ID"
   exit 1
 fi
