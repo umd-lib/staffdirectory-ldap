@@ -25,11 +25,37 @@ CONFIG_FILE=$SCRIPT_DIR/config/config.properties
 cd "$SCRIPT_DIR"
 
 echo === Retrieving staff information ===
-bin/staff-retriever --config "$CONFIG_PROPERTIES_FILE" --output "$LATEST_JSON_FILE"
-RETRIEVER_RESULT=$?
+
+# Retry configuration
+MAX_RETRIES=3
+RETRY_DELAY=5
+RETRIEVER_RESULT=1
+
+for attempt in $(seq 1 $MAX_RETRIES); do
+  if [ $attempt -gt 1 ]; then
+    echo "Retry attempt $attempt/$MAX_RETRIES (waiting ${RETRY_DELAY}s)..."
+    sleep $RETRY_DELAY
+    # Exponential backoff: increase delay for next retry
+    RETRY_DELAY=$((RETRY_DELAY * 2))
+  fi
+  
+  # Run with 5 minute timeout
+  timeout 300 bin/staff-retriever --config "$CONFIG_PROPERTIES_FILE" --output "$LATEST_JSON_FILE"
+  RETRIEVER_RESULT=$?
+  
+  # Success (0) or timeout (124) or other errors
+  if [ $RETRIEVER_RESULT -eq 0 ]; then
+    echo "Staff retriever completed successfully."
+    break
+  elif [ $RETRIEVER_RESULT -eq 124 ]; then
+    echo "Staff retriever timed out (attempt $attempt/$MAX_RETRIES)"
+  else
+    echo "Staff retriever failed with exit code $RETRIEVER_RESULT (attempt $attempt/$MAX_RETRIES)"
+  fi
+done
 
 if [[ "$RETRIEVER_RESULT" -ne "0" ]]; then
-  echo "ERROR: bin/staff-retriever failed. Exiting."
+  echo "ERROR: bin/staff-retriever failed after $MAX_RETRIES attempts. Likely networking issue. Try again later. Exiting."
   exit 1
 fi
 
