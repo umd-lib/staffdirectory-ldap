@@ -1,0 +1,34 @@
+# Dockerfile for generating the "staffdirectory-ldap" Docker image
+#
+# To build:
+#
+# docker buildx build --platform linux/amd64 -t docker.lib.umd.edu/staffdirectory-ldap:latest . --push
+#
+# where <VERSION> is the Docker image version to create.
+FROM maven:3.8-openjdk-8-slim AS compile
+
+RUN echo "deb https://archive.debian.org/debian-security/ bullseye-security main contrib non-free" >> /etc/apt/sources.list
+
+RUN apt-get update && \
+    apt-get install -y git && \
+    apt-get clean
+
+ENV SOURCE_DIR /opt/staffdirectory-ldap
+
+COPY . $SOURCE_DIR
+
+WORKDIR $SOURCE_DIR
+
+RUN mvn clean package appassembler:assemble
+
+# Note: Cannot use "slim" version because of font libraries needed to generate
+# the Excel spreadsheet
+FROM eclipse-temurin:8u512-b09-jre-resolute
+
+# Samba client needed to transfer to file to LAN
+RUN apt-get update && \
+    apt-get install -y smbclient && \
+    apt-get clean
+
+COPY --from=compile /opt/staffdirectory-ldap/target/appassembler/ /opt/staffdirectory-ldap/
+COPY docker_config/staffdirectory-ldap/ /opt/staffdirectory-ldap/
